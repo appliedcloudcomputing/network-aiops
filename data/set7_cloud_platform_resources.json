@@ -1,0 +1,5218 @@
+{
+  "metadata": {
+    "dataset": "Cloud Platform Resources",
+    "total_records": 145,
+    "description": "Multi-cloud network security resources including AWS Security Groups, NACLs, Transit Gateway, Azure NSGs, GCP Firewall Rules, and Palo Alto firewall configurations",
+    "platforms": [
+      "AWS",
+      "Azure",
+      "GCP",
+      "Palo Alto"
+    ],
+    "generated_date": "2026-01-13"
+  },
+  "aws": {
+    "security_groups": {
+      "total_count": 35,
+      "list": [
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00001",
+          "name": "sg-webapp-prod",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 8,
+          "outbound_rules_count": 5,
+          "description": "Production web application security group",
+          "created_date": "2024-03-15",
+          "last_modified": "2026-01-10",
+          "tags": {
+            "Environment": "Production",
+            "Application": "WebApp",
+            "Owner": "Platform Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-001",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "0.0.0.0/0",
+              "description": "Allow HTTPS from internet"
+            },
+            {
+              "rule_id": "sgr-in-002",
+              "type": "HTTP",
+              "protocol": "TCP",
+              "port": "80",
+              "source": "0.0.0.0/0",
+              "description": "Allow HTTP for redirect"
+            },
+            {
+              "rule_id": "sgr-in-003",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "source": "sg-alb-public",
+              "description": "Allow ALB health checks"
+            },
+            {
+              "rule_id": "sgr-in-004",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "10.100.0.0/16",
+              "description": "Allow SSH from VPN"
+            },
+            {
+              "rule_id": "sgr-in-005",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9100",
+              "source": "sg-monitoring",
+              "description": "Allow Prometheus scraping"
+            },
+            {
+              "rule_id": "sgr-in-006",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8443",
+              "source": "sg-api-gateway",
+              "description": "Allow API Gateway"
+            },
+            {
+              "rule_id": "sgr-in-007",
+              "type": "ICMP",
+              "protocol": "ICMP",
+              "port": "All",
+              "source": "10.0.0.0/8",
+              "description": "Allow internal ping"
+            },
+            {
+              "rule_id": "sgr-in-008",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "sg-sendgrid",
+              "description": "Allow SendGrid webhooks"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-001",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "description": "Allow HTTPS outbound"
+            },
+            {
+              "rule_id": "sgr-out-002",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "destination": "sg-database-prod",
+              "description": "Allow database access"
+            },
+            {
+              "rule_id": "sgr-out-003",
+              "type": "Redis",
+              "protocol": "TCP",
+              "port": "6379",
+              "destination": "sg-redis-prod",
+              "description": "Allow Redis cache"
+            },
+            {
+              "rule_id": "sgr-out-004",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9092",
+              "destination": "sg-kafka-prod",
+              "description": "Allow Kafka access"
+            },
+            {
+              "rule_id": "sgr-out-005",
+              "type": "DNS",
+              "protocol": "UDP",
+              "port": "53",
+              "destination": "sg-dns",
+              "description": "Allow DNS resolution"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0abc123def456789a",
+              "resource_type": "EC2",
+              "name": "webapp-prod-1",
+              "private_ip": "10.30.1.10"
+            },
+            {
+              "resource_id": "i-0abc123def456789b",
+              "resource_type": "EC2",
+              "name": "webapp-prod-2",
+              "private_ip": "10.30.1.11"
+            },
+            {
+              "resource_id": "i-0abc123def456789c",
+              "resource_type": "EC2",
+              "name": "webapp-prod-3",
+              "private_ip": "10.30.1.12"
+            },
+            {
+              "resource_id": "eni-0123456789abcdef0",
+              "resource_type": "ENI",
+              "name": "webapp-eni-1",
+              "private_ip": "10.30.1.20"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00002",
+          "name": "sg-database-prod",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 5,
+          "outbound_rules_count": 3,
+          "description": "Production database tier security group",
+          "created_date": "2024-03-15",
+          "last_modified": "2026-01-08",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Database",
+            "Owner": "DBA Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-101",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "source": "sg-webapp-prod",
+              "description": "Allow from web tier"
+            },
+            {
+              "rule_id": "sgr-in-102",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "source": "sg-api-gateway",
+              "description": "Allow from API tier"
+            },
+            {
+              "rule_id": "sgr-in-103",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "source": "sg-analytics-prod",
+              "description": "Allow from analytics"
+            },
+            {
+              "rule_id": "sgr-in-104",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "Allow SSH from bastion"
+            },
+            {
+              "rule_id": "sgr-in-105",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9100",
+              "source": "sg-monitoring",
+              "description": "Allow Prometheus"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-101",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "destination": "10.120.0.0/16",
+              "description": "Allow replication to DR"
+            },
+            {
+              "rule_id": "sgr-out-102",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-63a5400a",
+              "description": "Allow S3 backup via endpoint"
+            },
+            {
+              "rule_id": "sgr-out-103",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9997",
+              "destination": "sg-splunk",
+              "description": "Allow Splunk logging"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0db123def456789a",
+              "resource_type": "EC2",
+              "name": "postgres-primary",
+              "private_ip": "10.40.1.10"
+            },
+            {
+              "resource_id": "i-0db123def456789b",
+              "resource_type": "EC2",
+              "name": "postgres-replica-1",
+              "private_ip": "10.40.1.11"
+            },
+            {
+              "resource_id": "i-0db123def456789c",
+              "resource_type": "EC2",
+              "name": "postgres-replica-2",
+              "private_ip": "10.40.1.12"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00003",
+          "name": "sg-redis-prod",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 4,
+          "outbound_rules_count": 2,
+          "description": "Production Redis cache cluster security group",
+          "created_date": "2024-04-20",
+          "last_modified": "2026-01-05",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Cache",
+            "Owner": "Platform Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-201",
+              "type": "Redis",
+              "protocol": "TCP",
+              "port": "6379",
+              "source": "sg-webapp-prod",
+              "description": "Allow from web tier"
+            },
+            {
+              "rule_id": "sgr-in-202",
+              "type": "Redis",
+              "protocol": "TCP",
+              "port": "6379",
+              "source": "sg-api-gateway",
+              "description": "Allow from API tier"
+            },
+            {
+              "rule_id": "sgr-in-203",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "16379",
+              "source": "sg-redis-prod",
+              "description": "Allow cluster bus"
+            },
+            {
+              "rule_id": "sgr-in-204",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "26379",
+              "source": "sg-redis-prod",
+              "description": "Allow Sentinel"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-201",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "16379",
+              "destination": "sg-redis-prod",
+              "description": "Allow cluster bus"
+            },
+            {
+              "rule_id": "sgr-out-202",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "26379",
+              "destination": "sg-redis-prod",
+              "description": "Allow Sentinel"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "elasticache-001",
+              "resource_type": "ElastiCache",
+              "name": "redis-prod-cluster",
+              "private_ip": "10.35.1.10"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00004",
+          "name": "sg-kafka-prod",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 6,
+          "outbound_rules_count": 4,
+          "description": "Production Kafka cluster security group",
+          "created_date": "2024-05-10",
+          "last_modified": "2026-01-07",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Messaging",
+            "Owner": "Data Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-301",
+              "type": "Kafka",
+              "protocol": "TCP",
+              "port": "9092",
+              "source": "sg-webapp-prod",
+              "description": "Allow producers"
+            },
+            {
+              "rule_id": "sgr-in-302",
+              "type": "Kafka",
+              "protocol": "TCP",
+              "port": "9092",
+              "source": "sg-analytics-prod",
+              "description": "Allow consumers"
+            },
+            {
+              "rule_id": "sgr-in-303",
+              "type": "Zookeeper",
+              "protocol": "TCP",
+              "port": "2181",
+              "source": "sg-kafka-prod",
+              "description": "ZK client"
+            },
+            {
+              "rule_id": "sgr-in-304",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "2888",
+              "source": "sg-kafka-prod",
+              "description": "ZK peer"
+            },
+            {
+              "rule_id": "sgr-in-305",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "3888",
+              "source": "sg-kafka-prod",
+              "description": "ZK election"
+            },
+            {
+              "rule_id": "sgr-in-306",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9093",
+              "source": "sg-kafka-prod",
+              "description": "Inter-broker"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-301",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "2181",
+              "destination": "sg-kafka-prod",
+              "description": "ZK client"
+            },
+            {
+              "rule_id": "sgr-out-302",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "2888-3888",
+              "destination": "sg-kafka-prod",
+              "description": "ZK peer/election"
+            },
+            {
+              "rule_id": "sgr-out-303",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9093",
+              "destination": "sg-kafka-prod",
+              "description": "Inter-broker"
+            },
+            {
+              "rule_id": "sgr-out-304",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-63a5400a",
+              "description": "S3 for tiered storage"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0kf123def456789a",
+              "resource_type": "EC2",
+              "name": "kafka-broker-1",
+              "private_ip": "10.36.1.10"
+            },
+            {
+              "resource_id": "i-0kf123def456789b",
+              "resource_type": "EC2",
+              "name": "kafka-broker-2",
+              "private_ip": "10.36.1.11"
+            },
+            {
+              "resource_id": "i-0kf123def456789c",
+              "resource_type": "EC2",
+              "name": "kafka-broker-3",
+              "private_ip": "10.36.1.12"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00005",
+          "name": "sg-alb-public",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 3,
+          "outbound_rules_count": 2,
+          "description": "Public-facing Application Load Balancer",
+          "created_date": "2024-03-15",
+          "last_modified": "2026-01-10",
+          "tags": {
+            "Environment": "Production",
+            "Application": "LoadBalancer",
+            "Owner": "Platform Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-401",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "0.0.0.0/0",
+              "description": "Allow HTTPS"
+            },
+            {
+              "rule_id": "sgr-in-402",
+              "type": "HTTP",
+              "protocol": "TCP",
+              "port": "80",
+              "source": "0.0.0.0/0",
+              "description": "Allow HTTP redirect"
+            },
+            {
+              "rule_id": "sgr-in-403",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "pl-cloudflare",
+              "description": "Allow Cloudflare IPs"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-401",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "destination": "sg-webapp-prod",
+              "description": "To web tier"
+            },
+            {
+              "rule_id": "sgr-out-402",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "destination": "sg-api-gateway",
+              "description": "To API tier"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/prod-alb/abc123",
+              "resource_type": "ALB",
+              "name": "prod-alb",
+              "private_ip": "N/A"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00006",
+          "name": "sg-api-gateway",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 4,
+          "outbound_rules_count": 6,
+          "description": "API Gateway and microservices tier",
+          "created_date": "2024-03-20",
+          "last_modified": "2026-01-09",
+          "tags": {
+            "Environment": "Production",
+            "Application": "API",
+            "Owner": "API Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-501",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "source": "sg-alb-public",
+              "description": "From ALB"
+            },
+            {
+              "rule_id": "sgr-in-502",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "source": "sg-api-gateway",
+              "description": "Inter-service"
+            },
+            {
+              "rule_id": "sgr-in-503",
+              "type": "gRPC",
+              "protocol": "TCP",
+              "port": "50051",
+              "source": "sg-api-gateway",
+              "description": "gRPC internal"
+            },
+            {
+              "rule_id": "sgr-in-504",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "SSH from bastion"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-501",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "destination": "sg-database-prod",
+              "description": "Database"
+            },
+            {
+              "rule_id": "sgr-out-502",
+              "type": "Redis",
+              "protocol": "TCP",
+              "port": "6379",
+              "destination": "sg-redis-prod",
+              "description": "Cache"
+            },
+            {
+              "rule_id": "sgr-out-503",
+              "type": "Kafka",
+              "protocol": "TCP",
+              "port": "9092",
+              "destination": "sg-kafka-prod",
+              "description": "Kafka"
+            },
+            {
+              "rule_id": "sgr-out-504",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "destination": "sg-api-gateway",
+              "description": "Inter-service"
+            },
+            {
+              "rule_id": "sgr-out-505",
+              "type": "gRPC",
+              "protocol": "TCP",
+              "port": "50051",
+              "destination": "sg-api-gateway",
+              "description": "gRPC"
+            },
+            {
+              "rule_id": "sgr-out-506",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "description": "External APIs"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0api123def456789a",
+              "resource_type": "EC2",
+              "name": "api-prod-1",
+              "private_ip": "10.31.1.10"
+            },
+            {
+              "resource_id": "i-0api123def456789b",
+              "resource_type": "EC2",
+              "name": "api-prod-2",
+              "private_ip": "10.31.1.11"
+            },
+            {
+              "resource_id": "i-0api123def456789c",
+              "resource_type": "EC2",
+              "name": "api-prod-3",
+              "private_ip": "10.31.1.12"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00007",
+          "name": "sg-bastion",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 2,
+          "outbound_rules_count": 3,
+          "description": "Bastion host for SSH access",
+          "created_date": "2024-03-15",
+          "last_modified": "2025-12-20",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Bastion",
+            "Owner": "Security Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-601",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "10.100.0.0/16",
+              "description": "VPN access"
+            },
+            {
+              "rule_id": "sgr-in-602",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "203.0.113.50/32",
+              "description": "Emergency IP"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-601",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "destination": "10.0.0.0/8",
+              "description": "SSH to internal"
+            },
+            {
+              "rule_id": "sgr-out-602",
+              "type": "RDP",
+              "protocol": "TCP",
+              "port": "3389",
+              "destination": "10.0.0.0/8",
+              "description": "RDP to Windows"
+            },
+            {
+              "rule_id": "sgr-out-603",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "description": "Updates"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0bst123def456789a",
+              "resource_type": "EC2",
+              "name": "bastion-prod",
+              "private_ip": "10.20.1.10"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00008",
+          "name": "sg-monitoring",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 5,
+          "outbound_rules_count": 4,
+          "description": "Monitoring stack (Prometheus, Grafana, AlertManager)",
+          "created_date": "2024-04-01",
+          "last_modified": "2026-01-05",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Monitoring",
+            "Owner": "SRE Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-701",
+              "type": "Grafana",
+              "protocol": "TCP",
+              "port": "3000",
+              "source": "10.100.0.0/16",
+              "description": "Grafana UI"
+            },
+            {
+              "rule_id": "sgr-in-702",
+              "type": "Prometheus",
+              "protocol": "TCP",
+              "port": "9090",
+              "source": "10.100.0.0/16",
+              "description": "Prometheus UI"
+            },
+            {
+              "rule_id": "sgr-in-703",
+              "type": "AlertManager",
+              "protocol": "TCP",
+              "port": "9093",
+              "source": "10.100.0.0/16",
+              "description": "AlertManager UI"
+            },
+            {
+              "rule_id": "sgr-in-704",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9100",
+              "source": "10.0.0.0/8",
+              "description": "Node exporter metrics"
+            },
+            {
+              "rule_id": "sgr-in-705",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "SSH from bastion"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-701",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9100",
+              "destination": "10.0.0.0/8",
+              "description": "Scrape metrics"
+            },
+            {
+              "rule_id": "sgr-out-702",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "description": "PagerDuty, Slack"
+            },
+            {
+              "rule_id": "sgr-out-703",
+              "type": "SMTP",
+              "protocol": "TCP",
+              "port": "587",
+              "destination": "0.0.0.0/0",
+              "description": "Email alerts"
+            },
+            {
+              "rule_id": "sgr-out-704",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9093",
+              "destination": "sg-monitoring",
+              "description": "AlertManager HA"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0mon123def456789a",
+              "resource_type": "EC2",
+              "name": "prometheus-1",
+              "private_ip": "10.50.1.10"
+            },
+            {
+              "resource_id": "i-0mon123def456789b",
+              "resource_type": "EC2",
+              "name": "grafana-1",
+              "private_ip": "10.50.1.11"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00009",
+          "name": "sg-eks-nodes",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 7,
+          "outbound_rules_count": 5,
+          "description": "EKS worker nodes security group",
+          "created_date": "2024-06-01",
+          "last_modified": "2026-01-10",
+          "tags": {
+            "Environment": "Production",
+            "Application": "EKS",
+            "Owner": "Platform Team",
+            "kubernetes.io/cluster/prod-eks": "owned"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-801",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "sg-eks-nodes",
+              "description": "Node-to-node"
+            },
+            {
+              "rule_id": "sgr-in-802",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "sg-eks-control",
+              "description": "API server"
+            },
+            {
+              "rule_id": "sgr-in-803",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "10250",
+              "source": "sg-eks-control",
+              "description": "Kubelet"
+            },
+            {
+              "rule_id": "sgr-in-804",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "30000-32767",
+              "source": "sg-alb-public",
+              "description": "NodePort"
+            },
+            {
+              "rule_id": "sgr-in-805",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "SSH access"
+            },
+            {
+              "rule_id": "sgr-in-806",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "15010-15014",
+              "source": "sg-eks-nodes",
+              "description": "Istio"
+            },
+            {
+              "rule_id": "sgr-in-807",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9100",
+              "source": "sg-monitoring",
+              "description": "Metrics"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-801",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "destination": "sg-eks-nodes",
+              "description": "Node-to-node"
+            },
+            {
+              "rule_id": "sgr-out-802",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "description": "ECR, APIs"
+            },
+            {
+              "rule_id": "sgr-out-803",
+              "type": "DNS",
+              "protocol": "UDP",
+              "port": "53",
+              "destination": "sg-dns",
+              "description": "DNS"
+            },
+            {
+              "rule_id": "sgr-out-804",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "sg-eks-control",
+              "description": "API server"
+            },
+            {
+              "rule_id": "sgr-out-805",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "destination": "sg-database-prod",
+              "description": "Database"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0eks123def456789a",
+              "resource_type": "EC2",
+              "name": "eks-node-1",
+              "private_ip": "10.60.1.10"
+            },
+            {
+              "resource_id": "i-0eks123def456789b",
+              "resource_type": "EC2",
+              "name": "eks-node-2",
+              "private_ip": "10.60.1.11"
+            },
+            {
+              "resource_id": "i-0eks123def456789c",
+              "resource_type": "EC2",
+              "name": "eks-node-3",
+              "private_ip": "10.60.1.12"
+            },
+            {
+              "resource_id": "i-0eks123def456789d",
+              "resource_type": "EC2",
+              "name": "eks-node-4",
+              "private_ip": "10.60.1.13"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00010",
+          "name": "sg-eks-control",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 3,
+          "outbound_rules_count": 2,
+          "description": "EKS control plane security group",
+          "created_date": "2024-06-01",
+          "last_modified": "2025-11-15",
+          "tags": {
+            "Environment": "Production",
+            "Application": "EKS",
+            "Owner": "Platform Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-901",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "10.100.0.0/16",
+              "description": "kubectl from VPN"
+            },
+            {
+              "rule_id": "sgr-in-902",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "sg-eks-nodes",
+              "description": "From nodes"
+            },
+            {
+              "rule_id": "sgr-in-903",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "sg-jenkins",
+              "description": "CI/CD access"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-901",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "sg-eks-nodes",
+              "description": "To nodes API"
+            },
+            {
+              "rule_id": "sgr-out-902",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "10250",
+              "destination": "sg-eks-nodes",
+              "description": "To kubelet"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "arn:aws:eks:us-east-1:123456789012:cluster/prod-eks",
+              "resource_type": "EKS",
+              "name": "prod-eks",
+              "private_ip": "N/A"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00011",
+          "name": "sg-jenkins",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 4,
+          "outbound_rules_count": 6,
+          "description": "Jenkins CI/CD server",
+          "created_date": "2024-04-15",
+          "last_modified": "2026-01-08",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Jenkins",
+            "Owner": "DevOps Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-1001",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "source": "10.100.0.0/16",
+              "description": "Jenkins UI"
+            },
+            {
+              "rule_id": "sgr-in-1002",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "50000",
+              "source": "sg-jenkins-agents",
+              "description": "Agent connect"
+            },
+            {
+              "rule_id": "sgr-in-1003",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "140.82.112.0/20",
+              "description": "GitHub webhooks"
+            },
+            {
+              "rule_id": "sgr-in-1004",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "SSH access"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-1001",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "description": "GitHub, DockerHub"
+            },
+            {
+              "rule_id": "sgr-out-1002",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "destination": "0.0.0.0/0",
+              "description": "Git SSH"
+            },
+            {
+              "rule_id": "sgr-out-1003",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "sg-eks-control",
+              "description": "K8s deploy"
+            },
+            {
+              "rule_id": "sgr-out-1004",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-ecr",
+              "description": "ECR push"
+            },
+            {
+              "rule_id": "sgr-out-1005",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "sg-sonarqube",
+              "description": "Code scan"
+            },
+            {
+              "rule_id": "sgr-out-1006",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "50000",
+              "destination": "sg-jenkins-agents",
+              "description": "Agent comm"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0jen123def456789a",
+              "resource_type": "EC2",
+              "name": "jenkins-master",
+              "private_ip": "10.70.1.10"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00012",
+          "name": "sg-splunk",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 5,
+          "outbound_rules_count": 3,
+          "description": "Splunk logging cluster",
+          "created_date": "2024-05-01",
+          "last_modified": "2026-01-06",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Splunk",
+            "Owner": "Security Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-1101",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8000",
+              "source": "10.100.0.0/16",
+              "description": "Web UI"
+            },
+            {
+              "rule_id": "sgr-in-1102",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8088",
+              "source": "10.0.0.0/8",
+              "description": "HEC"
+            },
+            {
+              "rule_id": "sgr-in-1103",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9997",
+              "source": "10.0.0.0/8",
+              "description": "Forwarder"
+            },
+            {
+              "rule_id": "sgr-in-1104",
+              "type": "Syslog",
+              "protocol": "UDP",
+              "port": "514",
+              "source": "10.0.0.0/8",
+              "description": "Syslog UDP"
+            },
+            {
+              "rule_id": "sgr-in-1105",
+              "type": "Syslog",
+              "protocol": "TCP",
+              "port": "514",
+              "source": "10.0.0.0/8",
+              "description": "Syslog TCP"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-1101",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-63a5400a",
+              "description": "S3 archive"
+            },
+            {
+              "rule_id": "sgr-out-1102",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9997",
+              "destination": "sg-splunk",
+              "description": "Cluster repl"
+            },
+            {
+              "rule_id": "sgr-out-1103",
+              "type": "SMTP",
+              "protocol": "TCP",
+              "port": "587",
+              "destination": "0.0.0.0/0",
+              "description": "Email alerts"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0spl123def456789a",
+              "resource_type": "EC2",
+              "name": "splunk-indexer-1",
+              "private_ip": "10.80.1.10"
+            },
+            {
+              "resource_id": "i-0spl123def456789b",
+              "resource_type": "EC2",
+              "name": "splunk-indexer-2",
+              "private_ip": "10.80.1.11"
+            },
+            {
+              "resource_id": "i-0spl123def456789c",
+              "resource_type": "EC2",
+              "name": "splunk-search-1",
+              "private_ip": "10.80.1.20"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00013",
+          "name": "sg-vault",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 4,
+          "outbound_rules_count": 3,
+          "description": "HashiCorp Vault secrets management",
+          "created_date": "2024-05-15",
+          "last_modified": "2025-12-10",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Vault",
+            "Owner": "Security Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-1201",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8200",
+              "source": "10.0.0.0/8",
+              "description": "Vault API"
+            },
+            {
+              "rule_id": "sgr-in-1202",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8201",
+              "source": "sg-vault",
+              "description": "Cluster HA"
+            },
+            {
+              "rule_id": "sgr-in-1203",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8200",
+              "source": "10.100.0.0/16",
+              "description": "VPN UI"
+            },
+            {
+              "rule_id": "sgr-in-1204",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "SSH access"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-1201",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8201",
+              "destination": "sg-vault",
+              "description": "Cluster HA"
+            },
+            {
+              "rule_id": "sgr-out-1202",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-dynamodb",
+              "description": "DynamoDB backend"
+            },
+            {
+              "rule_id": "sgr-out-1203",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-kms",
+              "description": "KMS unseal"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0vlt123def456789a",
+              "resource_type": "EC2",
+              "name": "vault-1",
+              "private_ip": "10.90.1.10"
+            },
+            {
+              "resource_id": "i-0vlt123def456789b",
+              "resource_type": "EC2",
+              "name": "vault-2",
+              "private_ip": "10.90.1.11"
+            },
+            {
+              "resource_id": "i-0vlt123def456789c",
+              "resource_type": "EC2",
+              "name": "vault-3",
+              "private_ip": "10.90.1.12"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00014",
+          "name": "sg-elasticsearch",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 5,
+          "outbound_rules_count": 3,
+          "description": "Elasticsearch cluster for logging and search",
+          "created_date": "2024-06-10",
+          "last_modified": "2026-01-04",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Elasticsearch",
+            "Owner": "Data Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-1301",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9200",
+              "source": "sg-webapp-prod",
+              "description": "REST API"
+            },
+            {
+              "rule_id": "sgr-in-1302",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9200",
+              "source": "sg-api-gateway",
+              "description": "API access"
+            },
+            {
+              "rule_id": "sgr-in-1303",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9300",
+              "source": "sg-elasticsearch",
+              "description": "Transport"
+            },
+            {
+              "rule_id": "sgr-in-1304",
+              "type": "Kibana",
+              "protocol": "TCP",
+              "port": "5601",
+              "source": "10.100.0.0/16",
+              "description": "Kibana UI"
+            },
+            {
+              "rule_id": "sgr-in-1305",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "SSH access"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-1301",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9300",
+              "destination": "sg-elasticsearch",
+              "description": "Transport"
+            },
+            {
+              "rule_id": "sgr-out-1302",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-63a5400a",
+              "description": "S3 snapshots"
+            },
+            {
+              "rule_id": "sgr-out-1303",
+              "type": "DNS",
+              "protocol": "UDP",
+              "port": "53",
+              "destination": "sg-dns",
+              "description": "DNS"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0es123def456789a",
+              "resource_type": "EC2",
+              "name": "es-master-1",
+              "private_ip": "10.85.1.10"
+            },
+            {
+              "resource_id": "i-0es123def456789b",
+              "resource_type": "EC2",
+              "name": "es-data-1",
+              "private_ip": "10.85.1.20"
+            },
+            {
+              "resource_id": "i-0es123def456789c",
+              "resource_type": "EC2",
+              "name": "es-data-2",
+              "private_ip": "10.85.1.21"
+            }
+          ]
+        },
+        {
+          "sg_id": "sg-0a1b2c3d4e5f00015",
+          "name": "sg-analytics-prod",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "inbound_rules_count": 4,
+          "outbound_rules_count": 5,
+          "description": "Analytics and data science workloads",
+          "created_date": "2024-07-01",
+          "last_modified": "2026-01-07",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Analytics",
+            "Owner": "Data Science Team"
+          },
+          "inbound_rules": [
+            {
+              "rule_id": "sgr-in-1401",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8888",
+              "source": "10.100.0.0/16",
+              "description": "Jupyter"
+            },
+            {
+              "rule_id": "sgr-in-1402",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "4040",
+              "source": "10.100.0.0/16",
+              "description": "Spark UI"
+            },
+            {
+              "rule_id": "sgr-in-1403",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "8080",
+              "source": "10.100.0.0/16",
+              "description": "Airflow"
+            },
+            {
+              "rule_id": "sgr-in-1404",
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "sg-bastion",
+              "description": "SSH access"
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_id": "sgr-out-1401",
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "destination": "sg-database-prod",
+              "description": "Database"
+            },
+            {
+              "rule_id": "sgr-out-1402",
+              "type": "Kafka",
+              "protocol": "TCP",
+              "port": "9092",
+              "destination": "sg-kafka-prod",
+              "description": "Kafka"
+            },
+            {
+              "rule_id": "sgr-out-1403",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-63a5400a",
+              "description": "S3 data lake"
+            },
+            {
+              "rule_id": "sgr-out-1404",
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "9200",
+              "destination": "sg-elasticsearch",
+              "description": "ES search"
+            },
+            {
+              "rule_id": "sgr-out-1405",
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "description": "External APIs"
+            }
+          ],
+          "associated_resources": [
+            {
+              "resource_id": "i-0ana123def456789a",
+              "resource_type": "EC2",
+              "name": "analytics-1",
+              "private_ip": "10.95.1.10"
+            },
+            {
+              "resource_id": "i-0ana123def456789b",
+              "resource_type": "EC2",
+              "name": "jupyter-hub",
+              "private_ip": "10.95.1.20"
+            }
+          ]
+        }
+      ]
+    },
+    "network_acls": {
+      "total_count": 8,
+      "list": [
+        {
+          "nacl_id": "acl-0a1b2c3d4e5f00001",
+          "name": "acl-prod-public",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "is_default": false,
+          "subnet_associations": [
+            {
+              "subnet_id": "subnet-pub-1a",
+              "subnet_name": "Public-1a",
+              "cidr": "10.10.1.0/24"
+            },
+            {
+              "subnet_id": "subnet-pub-1b",
+              "subnet_name": "Public-1b",
+              "cidr": "10.10.2.0/24"
+            },
+            {
+              "subnet_id": "subnet-pub-1c",
+              "subnet_name": "Public-1c",
+              "cidr": "10.10.3.0/24"
+            }
+          ],
+          "inbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "source": "0.0.0.0/0",
+              "action": "ALLOW",
+              "description": "Allow HTTPS"
+            },
+            {
+              "rule_number": 110,
+              "type": "HTTP",
+              "protocol": "TCP",
+              "port": "80",
+              "source": "0.0.0.0/0",
+              "action": "ALLOW",
+              "description": "Allow HTTP"
+            },
+            {
+              "rule_number": 120,
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "1024-65535",
+              "source": "0.0.0.0/0",
+              "action": "ALLOW",
+              "description": "Ephemeral ports"
+            },
+            {
+              "rule_number": 200,
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Block SSH from internet"
+            },
+            {
+              "rule_number": 210,
+              "type": "RDP",
+              "protocol": "TCP",
+              "port": "3389",
+              "source": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Block RDP from internet"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "destination": "0.0.0.0/0",
+              "action": "ALLOW",
+              "description": "Allow all outbound"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "destination": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ]
+        },
+        {
+          "nacl_id": "acl-0a1b2c3d4e5f00002",
+          "name": "acl-prod-private",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "is_default": false,
+          "subnet_associations": [
+            {
+              "subnet_id": "subnet-priv-1a",
+              "subnet_name": "Private-App-1a",
+              "cidr": "10.30.1.0/24"
+            },
+            {
+              "subnet_id": "subnet-priv-1b",
+              "subnet_name": "Private-App-1b",
+              "cidr": "10.30.2.0/24"
+            },
+            {
+              "subnet_id": "subnet-priv-1c",
+              "subnet_name": "Private-App-1c",
+              "cidr": "10.30.3.0/24"
+            }
+          ],
+          "inbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "10.0.0.0/8",
+              "action": "ALLOW",
+              "description": "Allow internal"
+            },
+            {
+              "rule_number": 110,
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "1024-65535",
+              "source": "0.0.0.0/0",
+              "action": "ALLOW",
+              "description": "Return traffic"
+            },
+            {
+              "rule_number": 200,
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "198.51.100.0/24",
+              "action": "DENY",
+              "description": "Block malicious"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "destination": "10.0.0.0/8",
+              "action": "ALLOW",
+              "description": "Allow internal"
+            },
+            {
+              "rule_number": 110,
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "0.0.0.0/0",
+              "action": "ALLOW",
+              "description": "Allow HTTPS out"
+            },
+            {
+              "rule_number": 120,
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "1024-65535",
+              "destination": "0.0.0.0/0",
+              "action": "ALLOW",
+              "description": "Ephemeral ports"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "destination": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ]
+        },
+        {
+          "nacl_id": "acl-0a1b2c3d4e5f00003",
+          "name": "acl-prod-database",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "is_default": false,
+          "subnet_associations": [
+            {
+              "subnet_id": "subnet-db-1a",
+              "subnet_name": "Database-1a",
+              "cidr": "10.40.1.0/24"
+            },
+            {
+              "subnet_id": "subnet-db-1b",
+              "subnet_name": "Database-1b",
+              "cidr": "10.40.2.0/24"
+            },
+            {
+              "subnet_id": "subnet-db-1c",
+              "subnet_name": "Database-1c",
+              "cidr": "10.40.3.0/24"
+            }
+          ],
+          "inbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "source": "10.30.0.0/16",
+              "action": "ALLOW",
+              "description": "From app tier"
+            },
+            {
+              "rule_number": 110,
+              "type": "MySQL",
+              "protocol": "TCP",
+              "port": "3306",
+              "source": "10.30.0.0/16",
+              "action": "ALLOW",
+              "description": "From app tier"
+            },
+            {
+              "rule_number": 120,
+              "type": "SSH",
+              "protocol": "TCP",
+              "port": "22",
+              "source": "10.20.0.0/24",
+              "action": "ALLOW",
+              "description": "From bastion"
+            },
+            {
+              "rule_number": 200,
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Block internet"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "1024-65535",
+              "destination": "10.30.0.0/16",
+              "action": "ALLOW",
+              "description": "Return to app"
+            },
+            {
+              "rule_number": 110,
+              "type": "PostgreSQL",
+              "protocol": "TCP",
+              "port": "5432",
+              "destination": "10.120.0.0/16",
+              "action": "ALLOW",
+              "description": "DR replication"
+            },
+            {
+              "rule_number": 120,
+              "type": "HTTPS",
+              "protocol": "TCP",
+              "port": "443",
+              "destination": "pl-63a5400a",
+              "action": "ALLOW",
+              "description": "S3 backup"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "destination": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ]
+        },
+        {
+          "nacl_id": "acl-0a1b2c3d4e5f00004",
+          "name": "acl-prod-cache",
+          "vpc_id": "vpc-prod-east-1",
+          "vpc_name": "Production VPC",
+          "is_default": false,
+          "subnet_associations": [
+            {
+              "subnet_id": "subnet-cache-1a",
+              "subnet_name": "Cache-1a",
+              "cidr": "10.35.1.0/24"
+            },
+            {
+              "subnet_id": "subnet-cache-1b",
+              "subnet_name": "Cache-1b",
+              "cidr": "10.35.2.0/24"
+            }
+          ],
+          "inbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "Redis",
+              "protocol": "TCP",
+              "port": "6379",
+              "source": "10.30.0.0/16",
+              "action": "ALLOW",
+              "description": "Redis from app"
+            },
+            {
+              "rule_number": 110,
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "16379",
+              "source": "10.35.0.0/24",
+              "action": "ALLOW",
+              "description": "Cluster bus"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "source": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_number": 100,
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "1024-65535",
+              "destination": "10.30.0.0/16",
+              "action": "ALLOW",
+              "description": "Return to app"
+            },
+            {
+              "rule_number": 110,
+              "type": "Custom TCP",
+              "protocol": "TCP",
+              "port": "16379",
+              "destination": "10.35.0.0/24",
+              "action": "ALLOW",
+              "description": "Cluster bus"
+            },
+            {
+              "rule_number": "*",
+              "type": "All Traffic",
+              "protocol": "All",
+              "port": "All",
+              "destination": "0.0.0.0/0",
+              "action": "DENY",
+              "description": "Default deny",
+              "is_default": true
+            }
+          ]
+        }
+      ]
+    },
+    "transit_gateway": {
+      "tgw_id": "tgw-0a1b2c3d4e5f00001",
+      "name": "tgw-enterprise-hub",
+      "state": "available",
+      "owner_id": "123456789012",
+      "description": "Enterprise Transit Gateway Hub",
+      "amazon_side_asn": 64512,
+      "auto_accept_shared_attachments": "enable",
+      "default_route_table_association": "enable",
+      "default_route_table_propagation": "enable",
+      "vpn_ecmp_support": "enable",
+      "dns_support": "enable",
+      "multicast_support": "disable",
+      "route_tables": [
+        {
+          "route_table_id": "tgw-rtb-prod",
+          "name": "Production-Route-Table",
+          "state": "available",
+          "default_association": true,
+          "default_propagation": true,
+          "attachment_count": 8,
+          "routes": [
+            {
+              "cidr": "10.0.0.0/8",
+              "attachment_id": "tgw-attach-vpc-prod",
+              "attachment_name": "Production VPC",
+              "type": "Propagated",
+              "state": "active"
+            },
+            {
+              "cidr": "10.120.0.0/16",
+              "attachment_id": "tgw-attach-vpc-dr",
+              "attachment_name": "DR VPC",
+              "type": "Propagated",
+              "state": "active"
+            },
+            {
+              "cidr": "172.16.0.0/12",
+              "attachment_id": "tgw-attach-vpn-dc",
+              "attachment_name": "Datacenter VPN",
+              "type": "Propagated",
+              "state": "active"
+            },
+            {
+              "cidr": "192.168.0.0/16",
+              "attachment_id": "tgw-attach-peer-west",
+              "attachment_name": "West Region Peering",
+              "type": "Static",
+              "state": "active"
+            },
+            {
+              "cidr": "10.200.0.0/16",
+              "attachment_id": "tgw-attach-vpc-shared",
+              "attachment_name": "Shared Services VPC",
+              "type": "Propagated",
+              "state": "active"
+            },
+            {
+              "cidr": "0.0.0.0/0",
+              "attachment_id": "tgw-attach-vpc-egress",
+              "attachment_name": "Egress VPC",
+              "type": "Static",
+              "state": "active"
+            }
+          ]
+        },
+        {
+          "route_table_id": "tgw-rtb-dev",
+          "name": "Development-Route-Table",
+          "state": "available",
+          "default_association": false,
+          "default_propagation": false,
+          "attachment_count": 3,
+          "routes": [
+            {
+              "cidr": "10.100.0.0/16",
+              "attachment_id": "tgw-attach-vpc-dev",
+              "attachment_name": "Development VPC",
+              "type": "Propagated",
+              "state": "active"
+            },
+            {
+              "cidr": "10.200.0.0/16",
+              "attachment_id": "tgw-attach-vpc-shared",
+              "attachment_name": "Shared Services VPC",
+              "type": "Static",
+              "state": "active"
+            },
+            {
+              "cidr": "0.0.0.0/0",
+              "attachment_id": "tgw-attach-vpc-egress",
+              "attachment_name": "Egress VPC",
+              "type": "Static",
+              "state": "active"
+            },
+            {
+              "cidr": "10.0.0.0/8",
+              "attachment_id": null,
+              "attachment_name": null,
+              "type": "Blackhole",
+              "state": "blackhole"
+            }
+          ]
+        },
+        {
+          "route_table_id": "tgw-rtb-isolated",
+          "name": "Isolated-Route-Table",
+          "state": "available",
+          "default_association": false,
+          "default_propagation": false,
+          "attachment_count": 2,
+          "routes": [
+            {
+              "cidr": "10.150.0.0/16",
+              "attachment_id": "tgw-attach-vpc-pci",
+              "attachment_name": "PCI VPC",
+              "type": "Propagated",
+              "state": "active"
+            },
+            {
+              "cidr": "10.200.0.0/16",
+              "attachment_id": "tgw-attach-vpc-shared",
+              "attachment_name": "Shared Services VPC",
+              "type": "Static",
+              "state": "active"
+            }
+          ]
+        }
+      ],
+      "attachments": [
+        {
+          "attachment_id": "tgw-attach-vpc-prod",
+          "name": "Production VPC",
+          "type": "vpc",
+          "state": "available",
+          "vpc_id": "vpc-prod-east-1",
+          "subnet_ids": [
+            "subnet-tgw-1a",
+            "subnet-tgw-1b",
+            "subnet-tgw-1c"
+          ],
+          "route_table_association": "tgw-rtb-prod",
+          "route_propagation": [
+            "tgw-rtb-prod"
+          ]
+        },
+        {
+          "attachment_id": "tgw-attach-vpc-dr",
+          "name": "DR VPC",
+          "type": "vpc",
+          "state": "available",
+          "vpc_id": "vpc-dr-east-1",
+          "subnet_ids": [
+            "subnet-dr-tgw-1a",
+            "subnet-dr-tgw-1b"
+          ],
+          "route_table_association": "tgw-rtb-prod",
+          "route_propagation": [
+            "tgw-rtb-prod"
+          ]
+        },
+        {
+          "attachment_id": "tgw-attach-vpc-dev",
+          "name": "Development VPC",
+          "type": "vpc",
+          "state": "available",
+          "vpc_id": "vpc-dev-east-1",
+          "subnet_ids": [
+            "subnet-dev-tgw-1a"
+          ],
+          "route_table_association": "tgw-rtb-dev",
+          "route_propagation": [
+            "tgw-rtb-dev"
+          ]
+        },
+        {
+          "attachment_id": "tgw-attach-vpc-shared",
+          "name": "Shared Services VPC",
+          "type": "vpc",
+          "state": "available",
+          "vpc_id": "vpc-shared-east-1",
+          "subnet_ids": [
+            "subnet-shared-tgw-1a",
+            "subnet-shared-tgw-1b"
+          ],
+          "route_table_association": "tgw-rtb-prod",
+          "route_propagation": [
+            "tgw-rtb-prod",
+            "tgw-rtb-dev",
+            "tgw-rtb-isolated"
+          ]
+        },
+        {
+          "attachment_id": "tgw-attach-vpc-egress",
+          "name": "Egress VPC",
+          "type": "vpc",
+          "state": "available",
+          "vpc_id": "vpc-egress-east-1",
+          "subnet_ids": [
+            "subnet-egress-tgw-1a",
+            "subnet-egress-tgw-1b"
+          ],
+          "route_table_association": "tgw-rtb-prod",
+          "route_propagation": []
+        },
+        {
+          "attachment_id": "tgw-attach-vpc-pci",
+          "name": "PCI VPC",
+          "type": "vpc",
+          "state": "available",
+          "vpc_id": "vpc-pci-east-1",
+          "subnet_ids": [
+            "subnet-pci-tgw-1a"
+          ],
+          "route_table_association": "tgw-rtb-isolated",
+          "route_propagation": [
+            "tgw-rtb-isolated"
+          ]
+        },
+        {
+          "attachment_id": "tgw-attach-vpn-dc",
+          "name": "Datacenter VPN",
+          "type": "vpn",
+          "state": "available",
+          "vpn_id": "vpn-0abc123",
+          "route_table_association": "tgw-rtb-prod",
+          "route_propagation": [
+            "tgw-rtb-prod"
+          ]
+        },
+        {
+          "attachment_id": "tgw-attach-peer-west",
+          "name": "West Region Peering",
+          "type": "peering",
+          "state": "available",
+          "peer_tgw_id": "tgw-west-0xyz789",
+          "peer_region": "us-west-2",
+          "route_table_association": "tgw-rtb-prod",
+          "route_propagation": []
+        }
+      ],
+      "cross_region_peering": [
+        {
+          "peering_id": "tgw-peer-east-west",
+          "local_tgw": "tgw-0a1b2c3d4e5f00001",
+          "peer_tgw": "tgw-west-0xyz789",
+          "peer_region": "us-west-2",
+          "state": "available",
+          "created_date": "2024-08-15"
+        }
+      ]
+    },
+    "api_operations": {
+      "supported_operations": [
+        {
+          "operation": "DescribeSecurityGroups",
+          "description": "List all security groups with filters",
+          "last_used": "2026-01-13T10:30:00Z"
+        },
+        {
+          "operation": "DescribeSecurityGroupRules",
+          "description": "List rules for specific security group",
+          "last_used": "2026-01-13T10:30:00Z"
+        },
+        {
+          "operation": "AuthorizeSecurityGroupIngress",
+          "description": "Add inbound rule to security group",
+          "last_used": "2026-01-12T14:20:00Z"
+        },
+        {
+          "operation": "AuthorizeSecurityGroupEgress",
+          "description": "Add outbound rule to security group",
+          "last_used": "2026-01-12T14:20:00Z"
+        },
+        {
+          "operation": "RevokeSecurityGroupIngress",
+          "description": "Remove inbound rule from security group",
+          "last_used": "2026-01-11T09:15:00Z"
+        },
+        {
+          "operation": "RevokeSecurityGroupEgress",
+          "description": "Remove outbound rule from security group",
+          "last_used": "2026-01-10T16:45:00Z"
+        },
+        {
+          "operation": "ModifySecurityGroupRules",
+          "description": "Modify existing security group rules",
+          "last_used": "2026-01-12T11:00:00Z"
+        },
+        {
+          "operation": "CreateSecurityGroup",
+          "description": "Create new security group",
+          "last_used": "2026-01-08T13:30:00Z"
+        },
+        {
+          "operation": "DeleteSecurityGroup",
+          "description": "Delete security group",
+          "last_used": "2026-01-05T10:00:00Z"
+        },
+        {
+          "operation": "DescribeNetworkAcls",
+          "description": "List network ACLs",
+          "last_used": "2026-01-13T10:30:00Z"
+        },
+        {
+          "operation": "CreateNetworkAclEntry",
+          "description": "Add NACL rule",
+          "last_used": "2026-01-09T15:00:00Z"
+        },
+        {
+          "operation": "DeleteNetworkAclEntry",
+          "description": "Remove NACL rule",
+          "last_used": "2026-01-07T11:30:00Z"
+        },
+        {
+          "operation": "DescribeTransitGateways",
+          "description": "List transit gateways",
+          "last_used": "2026-01-13T10:30:00Z"
+        },
+        {
+          "operation": "DescribeTransitGatewayRouteTables",
+          "description": "List TGW route tables",
+          "last_used": "2026-01-13T10:30:00Z"
+        },
+        {
+          "operation": "DescribeTransitGatewayAttachments",
+          "description": "List TGW attachments",
+          "last_used": "2026-01-13T10:30:00Z"
+        }
+      ]
+    }
+  },
+  "azure": {
+    "network_security_groups": {
+      "total_count": 25,
+      "list": [
+        {
+          "nsg_id": "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-prod-networking/providers/Microsoft.Network/networkSecurityGroups/nsg-webapp-prod",
+          "name": "nsg-webapp-prod",
+          "resource_group": "rg-prod-networking",
+          "location": "eastus",
+          "inbound_rules_count": 10,
+          "outbound_rules_count": 6,
+          "provisioning_state": "Succeeded",
+          "tags": {
+            "Environment": "Production",
+            "Application": "WebApp",
+            "Owner": "Platform Team"
+          },
+          "associated_subnets": [
+            {
+              "subnet_id": "/subscriptions/.../subnets/snet-webapp-prod",
+              "subnet_name": "snet-webapp-prod",
+              "vnet_name": "vnet-prod-eastus"
+            }
+          ],
+          "associated_nics": [
+            {
+              "nic_id": "/subscriptions/.../networkInterfaces/nic-webapp-prod-1",
+              "nic_name": "nic-webapp-prod-1",
+              "vm_name": "vm-webapp-prod-1"
+            },
+            {
+              "nic_id": "/subscriptions/.../networkInterfaces/nic-webapp-prod-2",
+              "nic_name": "nic-webapp-prod-2",
+              "vm_name": "vm-webapp-prod-2"
+            }
+          ],
+          "inbound_rules": [
+            {
+              "rule_name": "Allow-HTTPS-Internet-Inbound",
+              "priority": 100,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "Internet",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "443",
+              "description": "Allow HTTPS from internet",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-HTTP-Internet-Inbound",
+              "priority": 110,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "Internet",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "80",
+              "description": "Allow HTTP for redirect",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-AppGW-Health-Probe",
+              "priority": 120,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "GatewayManager",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "65200-65535",
+              "description": "App Gateway health probe",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-VPN-SSH",
+              "priority": 130,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.100.0.0/16",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "22",
+              "description": "SSH from VPN",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Bastion-SSH",
+              "priority": 140,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.20.1.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "22",
+              "description": "SSH from Bastion subnet",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-LB-Health-Probe",
+              "priority": 150,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "*",
+              "source": "AzureLoadBalancer",
+              "source_port": "*",
+              "destination": "*",
+              "destination_port": "*",
+              "description": "LB health probes",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Prometheus-Scrape",
+              "priority": 160,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.50.0.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9100",
+              "description": "Prometheus node exporter",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-API-Internal",
+              "priority": 170,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": null,
+              "source_port": "*",
+              "destination": null,
+              "destination_port": "8080",
+              "description": "Internal API traffic",
+              "source_asg": "asg-api-servers",
+              "dest_asg": "asg-webapp-servers"
+            },
+            {
+              "rule_name": "Deny-SSH-Internet-Inbound",
+              "priority": 4091,
+              "direction": "Inbound",
+              "access": "Deny",
+              "protocol": "Tcp",
+              "source": "Internet",
+              "source_port": "*",
+              "destination": "*",
+              "destination_port": "22",
+              "description": "Block SSH from internet",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Deny-RDP-Internet-Inbound",
+              "priority": 4092,
+              "direction": "Inbound",
+              "access": "Deny",
+              "protocol": "Tcp",
+              "source": "Internet",
+              "source_port": "*",
+              "destination": "*",
+              "destination_port": "3389",
+              "description": "Block RDP from internet",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_name": "Allow-HTTPS-Outbound",
+              "priority": 100,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "Internet",
+              "destination_port": "443",
+              "description": "Allow HTTPS outbound",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-SQL-to-Database",
+              "priority": 110,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": null,
+              "source_port": "*",
+              "destination": null,
+              "destination_port": "5432",
+              "description": "PostgreSQL to database",
+              "source_asg": "asg-webapp-servers",
+              "dest_asg": "asg-database-servers"
+            },
+            {
+              "rule_name": "Allow-Redis-to-Cache",
+              "priority": 120,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "10.35.0.0/24",
+              "destination_port": "6379",
+              "description": "Redis cache access",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Storage-Outbound",
+              "priority": 130,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "Storage",
+              "destination_port": "443",
+              "description": "Azure Storage access",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-AzureMonitor-Outbound",
+              "priority": 140,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "AzureMonitor",
+              "destination_port": "443",
+              "description": "Azure Monitor",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-DNS-Outbound",
+              "priority": 200,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "*",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "168.63.129.16",
+              "destination_port": "53",
+              "description": "Azure DNS",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ]
+        },
+        {
+          "nsg_id": "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-prod-networking/providers/Microsoft.Network/networkSecurityGroups/nsg-database-prod",
+          "name": "nsg-database-prod",
+          "resource_group": "rg-prod-networking",
+          "location": "eastus",
+          "inbound_rules_count": 6,
+          "outbound_rules_count": 4,
+          "provisioning_state": "Succeeded",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Database",
+            "Owner": "DBA Team"
+          },
+          "associated_subnets": [
+            {
+              "subnet_id": "/subscriptions/.../subnets/snet-database-prod",
+              "subnet_name": "snet-database-prod",
+              "vnet_name": "vnet-prod-eastus"
+            }
+          ],
+          "associated_nics": [],
+          "inbound_rules": [
+            {
+              "rule_name": "Allow-WebApp-to-SQL",
+              "priority": 100,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": null,
+              "source_port": "*",
+              "destination": null,
+              "destination_port": "5432",
+              "description": "PostgreSQL from web tier",
+              "source_asg": "asg-webapp-servers",
+              "dest_asg": "asg-database-servers"
+            },
+            {
+              "rule_name": "Allow-API-to-SQL",
+              "priority": 110,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": null,
+              "source_port": "*",
+              "destination": null,
+              "destination_port": "5432",
+              "description": "PostgreSQL from API tier",
+              "source_asg": "asg-api-servers",
+              "dest_asg": "asg-database-servers"
+            },
+            {
+              "rule_name": "Allow-Analytics-to-SQL",
+              "priority": 120,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.95.0.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "5432",
+              "description": "PostgreSQL from analytics",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Bastion-SSH",
+              "priority": 130,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.20.1.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "22",
+              "description": "SSH from Bastion",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Prometheus-Scrape",
+              "priority": 140,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.50.0.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9100",
+              "description": "Prometheus",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Deny-All-Internet-Inbound",
+              "priority": 4096,
+              "direction": "Inbound",
+              "access": "Deny",
+              "protocol": "*",
+              "source": "Internet",
+              "source_port": "*",
+              "destination": "*",
+              "destination_port": "*",
+              "description": "Block all internet",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_name": "Allow-Storage-Backup",
+              "priority": 100,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "Storage",
+              "destination_port": "443",
+              "description": "Backup to storage",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-DR-Replication",
+              "priority": 110,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "10.120.0.0/16",
+              "destination_port": "5432",
+              "description": "DR replication",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-KeyVault-Access",
+              "priority": 120,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "AzureKeyVault",
+              "destination_port": "443",
+              "description": "Key Vault for TDE",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Deny-Internet-Outbound",
+              "priority": 4096,
+              "direction": "Outbound",
+              "access": "Deny",
+              "protocol": "*",
+              "source": "*",
+              "source_port": "*",
+              "destination": "Internet",
+              "destination_port": "*",
+              "description": "Block internet egress",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ]
+        },
+        {
+          "nsg_id": "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-prod-networking/providers/Microsoft.Network/networkSecurityGroups/nsg-aks-nodes",
+          "name": "nsg-aks-nodes",
+          "resource_group": "rg-prod-networking",
+          "location": "eastus",
+          "inbound_rules_count": 8,
+          "outbound_rules_count": 5,
+          "provisioning_state": "Succeeded",
+          "tags": {
+            "Environment": "Production",
+            "Application": "AKS",
+            "Owner": "Platform Team"
+          },
+          "associated_subnets": [
+            {
+              "subnet_id": "/subscriptions/.../subnets/snet-aks-nodes",
+              "subnet_name": "snet-aks-nodes",
+              "vnet_name": "vnet-prod-eastus"
+            }
+          ],
+          "associated_nics": [],
+          "inbound_rules": [
+            {
+              "rule_name": "Allow-AKS-Node-Internal",
+              "priority": 100,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "*",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "*",
+              "description": "Node to node traffic",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-AKS-API-VPN",
+              "priority": 110,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.100.0.0/16",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "443",
+              "description": "kubectl from VPN",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-NodePort-Range",
+              "priority": 120,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "AzureLoadBalancer",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "30000-32767",
+              "description": "NodePort services",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Istio-Control-Plane",
+              "priority": 130,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "15010-15014",
+              "description": "Istio pilot",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Kiali-VPN",
+              "priority": 140,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.100.0.0/16",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "20001",
+              "description": "Kiali UI",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Jaeger-VPN",
+              "priority": 150,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.100.0.0/16",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "16686",
+              "description": "Jaeger UI",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Prometheus-Scrape",
+              "priority": 160,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.50.0.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9100",
+              "description": "Prometheus",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Bastion-SSH",
+              "priority": 170,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.20.1.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "22",
+              "description": "SSH from Bastion",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_name": "Allow-ACR-Outbound",
+              "priority": 100,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "AzureContainerRegistry",
+              "destination_port": "443",
+              "description": "Pull from ACR",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-HTTPS-Outbound",
+              "priority": 110,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "Internet",
+              "destination_port": "443",
+              "description": "External APIs",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Database-Access",
+              "priority": 120,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "10.40.0.0/24",
+              "destination_port": "5432",
+              "description": "Database access",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Redis-Access",
+              "priority": 130,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "10.35.0.0/24",
+              "destination_port": "6379",
+              "description": "Redis access",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-AzureMonitor-Outbound",
+              "priority": 140,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "AzureMonitor",
+              "destination_port": "443",
+              "description": "Azure Monitor",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ]
+        },
+        {
+          "nsg_id": "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-prod-networking/providers/Microsoft.Network/networkSecurityGroups/nsg-management",
+          "name": "nsg-management",
+          "resource_group": "rg-prod-networking",
+          "location": "eastus",
+          "inbound_rules_count": 4,
+          "outbound_rules_count": 3,
+          "provisioning_state": "Succeeded",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Management",
+            "Owner": "Security Team"
+          },
+          "associated_subnets": [
+            {
+              "subnet_id": "/subscriptions/.../subnets/AzureBastionSubnet",
+              "subnet_name": "AzureBastionSubnet",
+              "vnet_name": "vnet-prod-eastus"
+            }
+          ],
+          "associated_nics": [],
+          "inbound_rules": [
+            {
+              "rule_name": "Allow-Bastion-Inbound",
+              "priority": 100,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "Internet",
+              "source_port": "*",
+              "destination": "*",
+              "destination_port": "443",
+              "description": "Bastion HTTPS",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-GatewayManager",
+              "priority": 110,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "GatewayManager",
+              "source_port": "*",
+              "destination": "*",
+              "destination_port": "443",
+              "description": "Gateway Manager",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-AzureLoadBalancer",
+              "priority": 120,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "*",
+              "source": "AzureLoadBalancer",
+              "source_port": "*",
+              "destination": "*",
+              "destination_port": "*",
+              "description": "LB health",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-BastionHostCommunication",
+              "priority": 130,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "*",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "8080,5701",
+              "description": "Bastion data plane",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_name": "Allow-Bastion-SSH-RDP",
+              "priority": 100,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "*",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "22,3389",
+              "description": "SSH/RDP to VMs",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-AzureCloud",
+              "priority": 110,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "*",
+              "source_port": "*",
+              "destination": "AzureCloud",
+              "destination_port": "443",
+              "description": "Azure services",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-BastionCommunication",
+              "priority": 120,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "*",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "8080,5701",
+              "description": "Bastion data plane",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ]
+        },
+        {
+          "nsg_id": "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-prod-networking/providers/Microsoft.Network/networkSecurityGroups/nsg-monitoring",
+          "name": "nsg-monitoring",
+          "resource_group": "rg-prod-networking",
+          "location": "eastus",
+          "inbound_rules_count": 6,
+          "outbound_rules_count": 4,
+          "provisioning_state": "Succeeded",
+          "tags": {
+            "Environment": "Production",
+            "Application": "Monitoring",
+            "Owner": "SRE Team"
+          },
+          "associated_subnets": [
+            {
+              "subnet_id": "/subscriptions/.../subnets/snet-monitoring",
+              "subnet_name": "snet-monitoring",
+              "vnet_name": "vnet-prod-eastus"
+            }
+          ],
+          "associated_nics": [],
+          "inbound_rules": [
+            {
+              "rule_name": "Allow-Grafana-VPN",
+              "priority": 100,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.100.0.0/16",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "3000",
+              "description": "Grafana UI",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Prometheus-VPN",
+              "priority": 110,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.100.0.0/16",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9090",
+              "description": "Prometheus UI",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Alertmanager-VPN",
+              "priority": 120,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.100.0.0/16",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9093",
+              "description": "AlertManager UI",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Metrics-Push",
+              "priority": 130,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9091",
+              "description": "Pushgateway",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Node-Exporter",
+              "priority": 140,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9100",
+              "description": "Node exporter",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-Bastion-SSH",
+              "priority": 150,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "10.20.1.0/24",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "22",
+              "description": "SSH from Bastion",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ],
+          "outbound_rules": [
+            {
+              "rule_name": "Allow-Prometheus-Scrape-All",
+              "priority": 100,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "VirtualNetwork",
+              "destination_port": "9100",
+              "description": "Scrape metrics",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-HTTPS-Outbound",
+              "priority": 110,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "Internet",
+              "destination_port": "443",
+              "description": "PagerDuty, Slack",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-SMTP-Outbound",
+              "priority": 120,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "Internet",
+              "destination_port": "587",
+              "description": "Email alerts",
+              "source_asg": null,
+              "dest_asg": null
+            },
+            {
+              "rule_name": "Allow-AzureMonitor-Outbound",
+              "priority": 130,
+              "direction": "Outbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "source": "VirtualNetwork",
+              "source_port": "*",
+              "destination": "AzureMonitor",
+              "destination_port": "443",
+              "description": "Azure Monitor",
+              "source_asg": null,
+              "dest_asg": null
+            }
+          ]
+        }
+      ]
+    },
+    "azure_firewall": {
+      "firewall_id": "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/rg-prod-networking/providers/Microsoft.Network/azureFirewalls/azfw-prod-hub",
+      "name": "azfw-prod-hub",
+      "resource_group": "rg-prod-networking",
+      "location": "eastus",
+      "sku_tier": "Premium",
+      "threat_intel_mode": "Alert",
+      "provisioning_state": "Succeeded",
+      "public_ips": [
+        "20.85.123.45",
+        "20.85.123.46"
+      ],
+      "private_ip": "10.10.1.4",
+      "dns_proxy_enabled": true,
+      "firewall_policy": {
+        "policy_id": "/subscriptions/.../firewallPolicies/afwp-prod-hub",
+        "policy_name": "afwp-prod-hub",
+        "rule_collection_groups": [
+          {
+            "name": "rcg-network-rules",
+            "priority": 200,
+            "rule_collections": [
+              {
+                "name": "rc-allow-internal",
+                "priority": 100,
+                "action": "Allow",
+                "rules": [
+                  {
+                    "name": "Allow-VNet-to-VNet",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "destination": [
+                      "10.0.0.0/8"
+                    ],
+                    "destination_ports": [
+                      "*"
+                    ],
+                    "protocols": [
+                      "Any"
+                    ]
+                  },
+                  {
+                    "name": "Allow-VPN-to-Internal",
+                    "source": [
+                      "10.100.0.0/16"
+                    ],
+                    "destination": [
+                      "10.0.0.0/8"
+                    ],
+                    "destination_ports": [
+                      "*"
+                    ],
+                    "protocols": [
+                      "Any"
+                    ]
+                  },
+                  {
+                    "name": "Allow-OnPrem-to-Cloud",
+                    "source": [
+                      "172.16.0.0/12"
+                    ],
+                    "destination": [
+                      "10.0.0.0/8"
+                    ],
+                    "destination_ports": [
+                      "*"
+                    ],
+                    "protocols": [
+                      "Any"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rc-allow-internet-egress",
+                "priority": 200,
+                "action": "Allow",
+                "rules": [
+                  {
+                    "name": "Allow-HTTPS-Egress",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "destination": [
+                      "*"
+                    ],
+                    "destination_ports": [
+                      "443"
+                    ],
+                    "protocols": [
+                      "TCP"
+                    ]
+                  },
+                  {
+                    "name": "Allow-HTTP-Egress",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "destination": [
+                      "*"
+                    ],
+                    "destination_ports": [
+                      "80"
+                    ],
+                    "protocols": [
+                      "TCP"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rc-deny-malicious",
+                "priority": 50,
+                "action": "Deny",
+                "rules": [
+                  {
+                    "name": "Deny-TorExitNodes",
+                    "source": [
+                      "*"
+                    ],
+                    "destination": [
+                      "TorExitNodes"
+                    ],
+                    "destination_ports": [
+                      "*"
+                    ],
+                    "protocols": [
+                      "Any"
+                    ]
+                  },
+                  {
+                    "name": "Deny-CryptoMining",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "destination": [
+                      "CryptoMiningPools"
+                    ],
+                    "destination_ports": [
+                      "*"
+                    ],
+                    "protocols": [
+                      "Any"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "rcg-application-rules",
+            "priority": 300,
+            "rule_collections": [
+              {
+                "name": "rc-allow-azure-services",
+                "priority": 100,
+                "action": "Allow",
+                "rules": [
+                  {
+                    "name": "Allow-AzurePortal",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "fqdn_tags": [
+                      "AzurePortal"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Allow-WindowsUpdate",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "fqdn_tags": [
+                      "WindowsUpdate"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Allow-AzureBackup",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "fqdn_tags": [
+                      "AzureBackup"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rc-allow-saas-apps",
+                "priority": 200,
+                "action": "Allow",
+                "rules": [
+                  {
+                    "name": "Allow-Office365",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "target_fqdns": [
+                      "*.office.com",
+                      "*.office365.com",
+                      "*.outlook.com"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Allow-Teams",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "target_fqdns": [
+                      "*.teams.microsoft.com",
+                      "*.skype.com"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Allow-Salesforce",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "target_fqdns": [
+                      "*.salesforce.com",
+                      "*.force.com"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Allow-GitHub",
+                    "source": [
+                      "10.70.0.0/24"
+                    ],
+                    "target_fqdns": [
+                      "github.com",
+                      "*.github.com",
+                      "*.githubusercontent.com"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "rc-deny-social-media",
+                "priority": 50,
+                "action": "Deny",
+                "rules": [
+                  {
+                    "name": "Deny-TikTok",
+                    "source": [
+                      "10.0.0.0/8"
+                    ],
+                    "target_fqdns": [
+                      "*.tiktok.com",
+                      "*.musical.ly",
+                      "*.byteoversea.com"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Deny-PersonalSocialMedia",
+                    "source": [
+                      "10.30.0.0/16"
+                    ],
+                    "target_fqdns": [
+                      "*.facebook.com",
+                      "*.instagram.com"
+                    ],
+                    "protocols": [
+                      {
+                        "type": "Https",
+                        "port": 443
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "rcg-dnat-rules",
+            "priority": 100,
+            "rule_collections": [
+              {
+                "name": "rc-inbound-nat",
+                "priority": 100,
+                "action": "DNAT",
+                "rules": [
+                  {
+                    "name": "DNAT-HTTPS-WebApp",
+                    "source": [
+                      "*"
+                    ],
+                    "destination": [
+                      "20.85.123.45"
+                    ],
+                    "destination_ports": [
+                      "443"
+                    ],
+                    "protocols": [
+                      "TCP"
+                    ],
+                    "translated_address": "10.30.1.10",
+                    "translated_port": "443"
+                  },
+                  {
+                    "name": "DNAT-SFTP-Partner",
+                    "source": [
+                      "198.51.100.0/24"
+                    ],
+                    "destination": [
+                      "20.85.123.46"
+                    ],
+                    "destination_ports": [
+                      "22"
+                    ],
+                    "protocols": [
+                      "TCP"
+                    ],
+                    "translated_address": "10.25.1.10",
+                    "translated_port": "22"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "azure_monitor_integration": {
+        "enabled": true,
+        "diagnostic_settings": "diag-azfw-prod",
+        "log_analytics_workspace": "law-security-prod",
+        "metrics_collected": [
+          "AllMetrics"
+        ],
+        "logs_collected": [
+          "AzureFirewallApplicationRule",
+          "AzureFirewallNetworkRule",
+          "AzureFirewallDnsProxy"
+        ]
+      }
+    },
+    "application_security_groups": [
+      {
+        "asg_id": "/subscriptions/.../applicationSecurityGroups/asg-webapp-servers",
+        "name": "asg-webapp-servers",
+        "resource_group": "rg-prod-networking",
+        "location": "eastus",
+        "member_count": 6
+      },
+      {
+        "asg_id": "/subscriptions/.../applicationSecurityGroups/asg-api-servers",
+        "name": "asg-api-servers",
+        "resource_group": "rg-prod-networking",
+        "location": "eastus",
+        "member_count": 4
+      },
+      {
+        "asg_id": "/subscriptions/.../applicationSecurityGroups/asg-database-servers",
+        "name": "asg-database-servers",
+        "resource_group": "rg-prod-networking",
+        "location": "eastus",
+        "member_count": 3
+      },
+      {
+        "asg_id": "/subscriptions/.../applicationSecurityGroups/asg-monitoring-servers",
+        "name": "asg-monitoring-servers",
+        "resource_group": "rg-prod-networking",
+        "location": "eastus",
+        "member_count": 2
+      }
+    ]
+  },
+  "gcp": {
+    "firewall_rules": {
+      "total_count": 30,
+      "list": [
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-https-ingress",
+          "name": "allow-https-ingress",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": [
+            "0.0.0.0/0"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": [
+            "web-server"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "443"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow HTTPS traffic from internet to web servers",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-15T10:30:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-http-ingress",
+          "name": "allow-http-ingress",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1001,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": [
+            "0.0.0.0/0"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": [
+            "web-server"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "80"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow HTTP for redirect to HTTPS",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-15T10:31:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-ssh-iap",
+          "name": "allow-ssh-iap",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": [
+            "35.235.240.0/20"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": null,
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "22"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow SSH via Identity-Aware Proxy",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-15T10:32:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-health-check",
+          "name": "allow-health-check",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": [
+            "35.191.0.0/16",
+            "130.211.0.0/22"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": [
+            "allow-health-check"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "80",
+                "443",
+                "8080"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow GCP health check probes",
+          "logging_enabled": false,
+          "creation_timestamp": "2024-03-15T10:33:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-internal-all",
+          "name": "allow-internal-all",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 65534,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": [
+            "10.0.0.0/8"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": null,
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "0-65535"
+              ]
+            },
+            {
+              "IPProtocol": "udp",
+              "ports": [
+                "0-65535"
+              ]
+            },
+            {
+              "IPProtocol": "icmp"
+            }
+          ],
+          "denied": null,
+          "description": "Allow all internal traffic",
+          "logging_enabled": false,
+          "creation_timestamp": "2024-03-15T10:00:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-db-from-app-postgres",
+          "name": "allow-db-from-app-postgres",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": null,
+          "source_tags": [
+            "app-server"
+          ],
+          "source_service_accounts": null,
+          "target_tags": [
+            "database-server"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "5432"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow PostgreSQL from application tier",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-20T14:00:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-db-from-app-mysql",
+          "name": "allow-db-from-app-mysql",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1001,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": null,
+          "source_tags": [
+            "app-server"
+          ],
+          "source_service_accounts": null,
+          "target_tags": [
+            "database-server"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "3306"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow MySQL from application tier",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-20T14:01:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-redis-from-app",
+          "name": "allow-redis-from-app",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": null,
+          "source_tags": [
+            "app-server",
+            "web-server"
+          ],
+          "source_service_accounts": null,
+          "target_tags": [
+            "redis-server"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "6379"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow Redis from app and web tiers",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-04-05T09:00:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-gke-node-to-node",
+          "name": "allow-gke-node-to-node",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": null,
+          "source_tags": [
+            "gke-prod-cluster-nodes"
+          ],
+          "source_service_accounts": null,
+          "target_tags": [
+            "gke-prod-cluster-nodes"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "all"
+            }
+          ],
+          "denied": null,
+          "description": "Allow all traffic between GKE nodes",
+          "logging_enabled": false,
+          "creation_timestamp": "2024-06-01T11:00:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-gke-master-to-nodes",
+          "name": "allow-gke-master-to-nodes",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": [
+            "172.16.0.0/28"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": [
+            "gke-prod-cluster-nodes"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "443",
+                "10250"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow GKE master to communicate with nodes",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-06-01T11:01:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/deny-ssh-public",
+          "name": "deny-ssh-public",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 2000,
+          "direction": "INGRESS",
+          "action": "deny",
+          "disabled": false,
+          "source_ranges": [
+            "0.0.0.0/0"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": null,
+          "target_service_accounts": null,
+          "allowed": null,
+          "denied": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "22"
+              ]
+            }
+          ],
+          "description": "Block SSH from internet (use IAP instead)",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-15T10:35:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/deny-rdp-public",
+          "name": "deny-rdp-public",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 2001,
+          "direction": "INGRESS",
+          "action": "deny",
+          "disabled": false,
+          "source_ranges": [
+            "0.0.0.0/0"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": null,
+          "target_service_accounts": null,
+          "allowed": null,
+          "denied": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "3389"
+              ]
+            }
+          ],
+          "description": "Block RDP from internet",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-15T10:36:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/deny-all-ingress",
+          "name": "deny-all-ingress",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 65535,
+          "direction": "INGRESS",
+          "action": "deny",
+          "disabled": false,
+          "source_ranges": [
+            "0.0.0.0/0"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": null,
+          "target_service_accounts": null,
+          "allowed": null,
+          "denied": [
+            {
+              "IPProtocol": "all"
+            }
+          ],
+          "description": "Default deny all ingress",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-03-15T10:00:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-prometheus-scrape",
+          "name": "allow-prometheus-scrape",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1000,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": null,
+          "source_tags": [
+            "prometheus-server"
+          ],
+          "source_service_accounts": null,
+          "target_tags": null,
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "9090",
+                "9100"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow Prometheus to scrape all targets",
+          "logging_enabled": false,
+          "creation_timestamp": "2024-04-10T08:00:00.000-07:00"
+        },
+        {
+          "rule_id": "projects/acme-prod-123456/global/firewalls/allow-grafana-vpn",
+          "name": "allow-grafana-vpn",
+          "network": "projects/acme-prod-123456/global/networks/vpc-production",
+          "network_name": "vpc-production",
+          "priority": 1002,
+          "direction": "INGRESS",
+          "action": "allow",
+          "disabled": false,
+          "source_ranges": [
+            "10.100.0.0/16"
+          ],
+          "source_tags": null,
+          "source_service_accounts": null,
+          "target_tags": [
+            "grafana-server"
+          ],
+          "target_service_accounts": null,
+          "allowed": [
+            {
+              "IPProtocol": "tcp",
+              "ports": [
+                "3000"
+              ]
+            }
+          ],
+          "denied": null,
+          "description": "Allow Grafana access from VPN",
+          "logging_enabled": true,
+          "creation_timestamp": "2024-04-10T08:01:00.000-07:00"
+        }
+      ]
+    },
+    "network_tags": {
+      "total_count": 20,
+      "list": [
+        {
+          "tag": "web-server",
+          "description": "Web application servers",
+          "instance_count": 6,
+          "associated_rules": [
+            "allow-https-ingress",
+            "allow-http-ingress",
+            "allow-health-check"
+          ]
+        },
+        {
+          "tag": "app-server",
+          "description": "Application tier servers",
+          "instance_count": 8,
+          "associated_rules": [
+            "allow-db-from-app-postgres",
+            "allow-db-from-app-mysql",
+            "allow-redis-from-app"
+          ]
+        },
+        {
+          "tag": "database-server",
+          "description": "Database servers",
+          "instance_count": 4,
+          "associated_rules": [
+            "allow-db-from-app-postgres",
+            "allow-db-from-app-mysql"
+          ]
+        },
+        {
+          "tag": "redis-server",
+          "description": "Redis cache servers",
+          "instance_count": 3,
+          "associated_rules": [
+            "allow-redis-from-app"
+          ]
+        },
+        {
+          "tag": "gke-prod-cluster-nodes",
+          "description": "GKE production cluster nodes",
+          "instance_count": 12,
+          "associated_rules": [
+            "allow-gke-node-to-node",
+            "allow-gke-master-to-nodes"
+          ]
+        },
+        {
+          "tag": "prometheus-server",
+          "description": "Prometheus monitoring servers",
+          "instance_count": 2,
+          "associated_rules": [
+            "allow-prometheus-scrape"
+          ]
+        },
+        {
+          "tag": "grafana-server",
+          "description": "Grafana dashboard servers",
+          "instance_count": 1,
+          "associated_rules": [
+            "allow-grafana-vpn"
+          ]
+        },
+        {
+          "tag": "bastion-host",
+          "description": "Bastion/Jump hosts",
+          "instance_count": 2,
+          "associated_rules": [
+            "allow-ssh-iap"
+          ]
+        },
+        {
+          "tag": "kafka-broker",
+          "description": "Kafka message brokers",
+          "instance_count": 3,
+          "associated_rules": [
+            "allow-kafka-producer",
+            "allow-kafka-internal"
+          ]
+        },
+        {
+          "tag": "elasticsearch-node",
+          "description": "Elasticsearch cluster nodes",
+          "instance_count": 4,
+          "associated_rules": [
+            "allow-elasticsearch-api",
+            "allow-elasticsearch-cluster"
+          ]
+        },
+        {
+          "tag": "allow-health-check",
+          "description": "Instances that accept health checks",
+          "instance_count": 25,
+          "associated_rules": [
+            "allow-health-check"
+          ]
+        },
+        {
+          "tag": "needs-nat",
+          "description": "Instances requiring NAT egress",
+          "instance_count": 15,
+          "associated_rules": []
+        },
+        {
+          "tag": "analytics-server",
+          "description": "Analytics and data processing",
+          "instance_count": 4,
+          "associated_rules": [
+            "allow-jupyter-vpn",
+            "allow-spark-ui"
+          ]
+        },
+        {
+          "tag": "ci-cd-server",
+          "description": "CI/CD infrastructure",
+          "instance_count": 3,
+          "associated_rules": [
+            "allow-jenkins-vpn",
+            "allow-github-webhook"
+          ]
+        },
+        {
+          "tag": "vault-server",
+          "description": "HashiCorp Vault servers",
+          "instance_count": 3,
+          "associated_rules": [
+            "allow-vault-api",
+            "allow-vault-cluster"
+          ]
+        }
+      ]
+    },
+    "vpc_flow_logs": {
+      "enabled": true,
+      "subnets_with_flow_logs": 12,
+      "subnets_without_flow_logs": 2,
+      "log_config": {
+        "aggregation_interval": "INTERVAL_5_SEC",
+        "flow_sampling": 0.5,
+        "metadata": "INCLUDE_ALL_METADATA",
+        "filter_expr": "true"
+      },
+      "export_destination": {
+        "type": "BigQuery",
+        "dataset": "vpc_flow_logs",
+        "project": "acme-logging-123456"
+      }
+    },
+    "cloud_monitoring_integration": {
+      "enabled": true,
+      "metrics_collected": [
+        "firewall/dropped_bytes_count",
+        "firewall/dropped_packets_count",
+        "firewall/allowed_connections_count"
+      ],
+      "alerting_policies": [
+        {
+          "policy_name": "High Denied Traffic",
+          "condition": "dropped_packets_count > 10000",
+          "notification_channels": [
+            "pagerduty-sre"
+          ]
+        },
+        {
+          "policy_name": "Unusual Egress",
+          "condition": "allowed_bytes_count > 100GB",
+          "notification_channels": [
+            "slack-security"
+          ]
+        }
+      ]
+    }
+  },
+  "palo_alto": {
+    "firewall_info": {
+      "hostname": "pa-fw-prod-01",
+      "model": "PA-5260",
+      "serial": "PA5260-001234",
+      "sw_version": "11.1.2",
+      "app_version": "8765-8432",
+      "threat_version": "8765-8432",
+      "wildfire_version": "789012-789456",
+      "ha_state": "active",
+      "ha_peer": "pa-fw-prod-02",
+      "management_ip": "192.168.1.1",
+      "uptime": "365 days, 4:32:15"
+    },
+    "zones": [
+      {
+        "name": "Untrust",
+        "type": "layer3",
+        "interfaces": [
+          "ethernet1/1",
+          "ethernet1/2"
+        ],
+        "protection_profile": "External-Zone-Protection"
+      },
+      {
+        "name": "DMZ",
+        "type": "layer3",
+        "interfaces": [
+          "ethernet1/3",
+          "ethernet1/4"
+        ],
+        "protection_profile": "DMZ-Zone-Protection"
+      },
+      {
+        "name": "Trust",
+        "type": "layer3",
+        "interfaces": [
+          "ethernet1/5",
+          "ethernet1/6",
+          "ethernet1/7"
+        ],
+        "protection_profile": "Internal-Zone-Protection"
+      },
+      {
+        "name": "Application",
+        "type": "layer3",
+        "interfaces": [
+          "ethernet1/8",
+          "ethernet1/9"
+        ],
+        "protection_profile": "Internal-Zone-Protection"
+      },
+      {
+        "name": "Database",
+        "type": "layer3",
+        "interfaces": [
+          "ethernet1/10"
+        ],
+        "protection_profile": "Internal-Zone-Protection"
+      },
+      {
+        "name": "Management",
+        "type": "layer3",
+        "interfaces": [
+          "ethernet1/11"
+        ],
+        "protection_profile": "Strict-Zone-Protection"
+      },
+      {
+        "name": "VPN",
+        "type": "layer3",
+        "interfaces": [
+          "tunnel.1",
+          "tunnel.2"
+        ],
+        "protection_profile": "VPN-Zone-Protection"
+      },
+      {
+        "name": "Container",
+        "type": "layer3",
+        "interfaces": [
+          "ethernet1/12",
+          "ethernet1/13"
+        ],
+        "protection_profile": "Internal-Zone-Protection"
+      }
+    ],
+    "address_groups": [
+      {
+        "name": "AG-Web-Servers",
+        "type": "static",
+        "members": [
+          "10.30.1.10",
+          "10.30.1.11",
+          "10.30.1.12"
+        ],
+        "description": "Production web servers"
+      },
+      {
+        "name": "AG-App-Servers",
+        "type": "static",
+        "members": [
+          "10.31.1.10",
+          "10.31.1.11",
+          "10.31.1.12"
+        ],
+        "description": "Application tier servers"
+      },
+      {
+        "name": "AG-Database-Servers",
+        "type": "static",
+        "members": [
+          "10.40.1.10",
+          "10.40.1.11",
+          "10.40.1.12"
+        ],
+        "description": "Database servers"
+      },
+      {
+        "name": "AG-Monitoring-Servers",
+        "type": "static",
+        "members": [
+          "10.50.1.10",
+          "10.50.1.11"
+        ],
+        "description": "Monitoring infrastructure"
+      },
+      {
+        "name": "AG-VPN-Users",
+        "type": "dynamic",
+        "filter": "vpn-user",
+        "description": "VPN connected users"
+      },
+      {
+        "name": "AG-Cloudflare-IPs",
+        "type": "static",
+        "members": [
+          "103.21.244.0/22",
+          "103.22.200.0/22",
+          "103.31.4.0/22",
+          "104.16.0.0/13"
+        ],
+        "description": "Cloudflare edge IPs"
+      },
+      {
+        "name": "AG-Partner-Networks",
+        "type": "static",
+        "members": [
+          "198.51.100.0/24",
+          "203.0.113.0/24"
+        ],
+        "description": "Partner network ranges"
+      },
+      {
+        "name": "AG-K8s-Nodes",
+        "type": "static",
+        "members": [
+          "10.60.1.0/24"
+        ],
+        "description": "Kubernetes worker nodes"
+      }
+    ],
+    "security_rules": {
+      "total_count": 55,
+      "rules": [
+        {
+          "rule_name": "Allow-API-Gateway-Inbound",
+          "rule_id": 1,
+          "source_zone": [
+            "Untrust"
+          ],
+          "destination_zone": [
+            "DMZ"
+          ],
+          "source_address": [
+            "any"
+          ],
+          "destination_address": [
+            "AG-Web-Servers"
+          ],
+          "application": [
+            "ssl",
+            "web-browsing"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Web-Protection",
+          "description": "Allow HTTPS inbound to web tier",
+          "disabled": false,
+          "hit_count": 15678432,
+          "last_hit": "2026-01-13T10:30:00Z"
+        },
+        {
+          "rule_name": "Allow-Web-to-App",
+          "rule_id": 2,
+          "source_zone": [
+            "DMZ"
+          ],
+          "destination_zone": [
+            "Application"
+          ],
+          "source_address": [
+            "AG-Web-Servers"
+          ],
+          "destination_address": [
+            "AG-App-Servers"
+          ],
+          "application": [
+            "web-browsing",
+            "ssl"
+          ],
+          "service": [
+            "tcp/8080",
+            "tcp/8443"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Internal-Protection",
+          "description": "Web tier to application tier",
+          "disabled": false,
+          "hit_count": 8765432,
+          "last_hit": "2026-01-13T10:29:55Z"
+        },
+        {
+          "rule_name": "Allow-App-to-DB-Postgres",
+          "rule_id": 3,
+          "source_zone": [
+            "Application"
+          ],
+          "destination_zone": [
+            "Database"
+          ],
+          "source_address": [
+            "AG-App-Servers"
+          ],
+          "destination_address": [
+            "AG-Database-Servers"
+          ],
+          "application": [
+            "postgres"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Database-Protection",
+          "description": "Application to PostgreSQL database",
+          "disabled": false,
+          "hit_count": 5432167,
+          "last_hit": "2026-01-13T10:29:50Z"
+        },
+        {
+          "rule_name": "Allow-App-to-DB-MySQL",
+          "rule_id": 4,
+          "source_zone": [
+            "Application"
+          ],
+          "destination_zone": [
+            "Database"
+          ],
+          "source_address": [
+            "AG-App-Servers"
+          ],
+          "destination_address": [
+            "AG-Database-Servers"
+          ],
+          "application": [
+            "mysql"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Database-Protection",
+          "description": "Application to MySQL database",
+          "disabled": false,
+          "hit_count": 2345678,
+          "last_hit": "2026-01-13T10:28:00Z"
+        },
+        {
+          "rule_name": "Allow-App-to-Cache",
+          "rule_id": 5,
+          "source_zone": [
+            "Application",
+            "DMZ"
+          ],
+          "destination_zone": [
+            "Application"
+          ],
+          "source_address": [
+            "AG-App-Servers",
+            "AG-Web-Servers"
+          ],
+          "destination_address": [
+            "10.35.1.0/24"
+          ],
+          "application": [
+            "redis"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Internal-Protection",
+          "description": "Application and web to Redis cache",
+          "disabled": false,
+          "hit_count": 12345678,
+          "last_hit": "2026-01-13T10:30:01Z"
+        },
+        {
+          "rule_name": "Allow-App-to-Kafka",
+          "rule_id": 6,
+          "source_zone": [
+            "Application"
+          ],
+          "destination_zone": [
+            "Application"
+          ],
+          "source_address": [
+            "AG-App-Servers"
+          ],
+          "destination_address": [
+            "10.36.1.0/24"
+          ],
+          "application": [
+            "kafka"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Internal-Protection",
+          "description": "Application to Kafka messaging",
+          "disabled": false,
+          "hit_count": 7654321,
+          "last_hit": "2026-01-13T10:29:58Z"
+        },
+        {
+          "rule_name": "Allow-Management-SSH",
+          "rule_id": 7,
+          "source_zone": [
+            "Management",
+            "VPN"
+          ],
+          "destination_zone": [
+            "any"
+          ],
+          "source_address": [
+            "10.20.1.0/24",
+            "AG-VPN-Users"
+          ],
+          "destination_address": [
+            "10.0.0.0/8"
+          ],
+          "application": [
+            "ssh"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Management-Protection",
+          "description": "SSH from management and VPN",
+          "disabled": false,
+          "hit_count": 234567,
+          "last_hit": "2026-01-13T10:15:00Z"
+        },
+        {
+          "rule_name": "Allow-VPN-RDP",
+          "rule_id": 8,
+          "source_zone": [
+            "VPN"
+          ],
+          "destination_zone": [
+            "Trust"
+          ],
+          "source_address": [
+            "AG-VPN-Users"
+          ],
+          "destination_address": [
+            "10.0.0.0/8"
+          ],
+          "application": [
+            "ms-rdp"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Management-Protection",
+          "description": "RDP from VPN users",
+          "disabled": false,
+          "hit_count": 45678,
+          "last_hit": "2026-01-13T09:45:00Z"
+        },
+        {
+          "rule_name": "Allow-Monitoring-Prometheus",
+          "rule_id": 9,
+          "source_zone": [
+            "Trust"
+          ],
+          "destination_zone": [
+            "any"
+          ],
+          "source_address": [
+            "AG-Monitoring-Servers"
+          ],
+          "destination_address": [
+            "10.0.0.0/8"
+          ],
+          "application": [
+            "any"
+          ],
+          "service": [
+            "tcp/9090",
+            "tcp/9100"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-Summary",
+          "security_profile_group": null,
+          "description": "Prometheus metrics collection",
+          "disabled": false,
+          "hit_count": 98765432,
+          "last_hit": "2026-01-13T10:30:05Z"
+        },
+        {
+          "rule_name": "Allow-Grafana-VPN",
+          "rule_id": 10,
+          "source_zone": [
+            "VPN"
+          ],
+          "destination_zone": [
+            "Trust"
+          ],
+          "source_address": [
+            "AG-VPN-Users"
+          ],
+          "destination_address": [
+            "AG-Monitoring-Servers"
+          ],
+          "application": [
+            "web-browsing"
+          ],
+          "service": [
+            "tcp/3000"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Internal-Protection",
+          "description": "Grafana access from VPN",
+          "disabled": false,
+          "hit_count": 12345,
+          "last_hit": "2026-01-13T10:20:00Z"
+        },
+        {
+          "rule_name": "Allow-Webhook-Stripe",
+          "rule_id": 11,
+          "source_zone": [
+            "Untrust"
+          ],
+          "destination_zone": [
+            "DMZ"
+          ],
+          "source_address": [
+            "203.0.113.0/24"
+          ],
+          "destination_address": [
+            "10.25.1.10"
+          ],
+          "application": [
+            "ssl"
+          ],
+          "service": [
+            "tcp/443"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Web-Protection",
+          "description": "Stripe payment webhooks",
+          "disabled": false,
+          "hit_count": 234567,
+          "last_hit": "2026-01-13T10:25:00Z"
+        },
+        {
+          "rule_name": "Allow-Webhook-GitHub",
+          "rule_id": 12,
+          "source_zone": [
+            "Untrust"
+          ],
+          "destination_zone": [
+            "DMZ"
+          ],
+          "source_address": [
+            "140.82.112.0/20"
+          ],
+          "destination_address": [
+            "10.70.1.10"
+          ],
+          "application": [
+            "ssl"
+          ],
+          "service": [
+            "tcp/443"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Web-Protection",
+          "description": "GitHub webhooks for CI/CD",
+          "disabled": false,
+          "hit_count": 45678,
+          "last_hit": "2026-01-13T10:10:00Z"
+        },
+        {
+          "rule_name": "Allow-CloudFlare-IPs",
+          "rule_id": 13,
+          "source_zone": [
+            "Untrust"
+          ],
+          "destination_zone": [
+            "DMZ"
+          ],
+          "source_address": [
+            "AG-Cloudflare-IPs"
+          ],
+          "destination_address": [
+            "AG-Web-Servers"
+          ],
+          "application": [
+            "ssl",
+            "web-browsing"
+          ],
+          "service": [
+            "application-default"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Web-Protection",
+          "description": "Cloudflare CDN to origin",
+          "disabled": false,
+          "hit_count": 23456789,
+          "last_hit": "2026-01-13T10:30:02Z"
+        },
+        {
+          "rule_name": "Allow-K8s-Node-Internal",
+          "rule_id": 14,
+          "source_zone": [
+            "Container"
+          ],
+          "destination_zone": [
+            "Container"
+          ],
+          "source_address": [
+            "AG-K8s-Nodes"
+          ],
+          "destination_address": [
+            "AG-K8s-Nodes"
+          ],
+          "application": [
+            "any"
+          ],
+          "service": [
+            "any"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-Summary",
+          "security_profile_group": null,
+          "description": "Kubernetes internal communication",
+          "disabled": false,
+          "hit_count": 567890123,
+          "last_hit": "2026-01-13T10:30:03Z"
+        },
+        {
+          "rule_name": "Allow-VPN-DevOps-K8s",
+          "rule_id": 15,
+          "source_zone": [
+            "VPN"
+          ],
+          "destination_zone": [
+            "Container"
+          ],
+          "source_address": [
+            "AG-VPN-Users"
+          ],
+          "destination_address": [
+            "AG-K8s-Nodes"
+          ],
+          "application": [
+            "ssl"
+          ],
+          "service": [
+            "tcp/6443"
+          ],
+          "action": "Allow",
+          "log_setting": "Log-All",
+          "security_profile_group": "Management-Protection",
+          "description": "kubectl access from VPN",
+          "disabled": false,
+          "hit_count": 34567,
+          "last_hit": "2026-01-13T10:00:00Z"
+        },
+        {
+          "rule_name": "Block-Malicious-IPs-Inbound",
+          "rule_id": 50,
+          "source_zone": [
+            "Untrust"
+          ],
+          "destination_zone": [
+            "any"
+          ],
+          "source_address": [
+            "EDL-Malicious-IPs"
+          ],
+          "destination_address": [
+            "any"
+          ],
+          "application": [
+            "any"
+          ],
+          "service": [
+            "any"
+          ],
+          "action": "Deny",
+          "log_setting": "Log-All",
+          "security_profile_group": null,
+          "description": "Block malicious IPs from threat intel",
+          "disabled": false,
+          "hit_count": 1234567,
+          "last_hit": "2026-01-13T10:28:00Z"
+        },
+        {
+          "rule_name": "Block-Tor-Exit-Nodes",
+          "rule_id": 51,
+          "source_zone": [
+            "Untrust"
+          ],
+          "destination_zone": [
+            "any"
+          ],
+          "source_address": [
+            "EDL-Tor-Exit-Nodes"
+          ],
+          "destination_address": [
+            "any"
+          ],
+          "application": [
+            "any"
+          ],
+          "service": [
+            "any"
+          ],
+          "action": "Deny",
+          "log_setting": "Log-All",
+          "security_profile_group": null,
+          "description": "Block Tor exit nodes",
+          "disabled": false,
+          "hit_count": 567890,
+          "last_hit": "2026-01-13T10:22:00Z"
+        },
+        {
+          "rule_name": "Block-Crypto-Mining",
+          "rule_id": 52,
+          "source_zone": [
+            "Trust",
+            "Application",
+            "DMZ"
+          ],
+          "destination_zone": [
+            "Untrust"
+          ],
+          "source_address": [
+            "any"
+          ],
+          "destination_address": [
+            "EDL-Crypto-Mining-Pools"
+          ],
+          "application": [
+            "any"
+          ],
+          "service": [
+            "any"
+          ],
+          "action": "Deny",
+          "log_setting": "Log-All",
+          "security_profile_group": null,
+          "description": "Block crypto mining pool access",
+          "disabled": false,
+          "hit_count": 12345,
+          "last_hit": "2026-01-12T15:00:00Z"
+        },
+        {
+          "rule_name": "Default-Deny-All",
+          "rule_id": 100,
+          "source_zone": [
+            "any"
+          ],
+          "destination_zone": [
+            "any"
+          ],
+          "source_address": [
+            "any"
+          ],
+          "destination_address": [
+            "any"
+          ],
+          "application": [
+            "any"
+          ],
+          "service": [
+            "any"
+          ],
+          "action": "Deny",
+          "log_setting": "Log-All",
+          "security_profile_group": null,
+          "description": "Default deny all traffic",
+          "disabled": false,
+          "hit_count": 23456789,
+          "last_hit": "2026-01-13T10:30:04Z"
+        }
+      ]
+    },
+    "security_profiles": {
+      "antivirus": [
+        {
+          "name": "AV-Standard",
+          "description": "Standard AV profile",
+          "action": "reset-both"
+        },
+        {
+          "name": "AV-Strict",
+          "description": "Strict AV with all decoders",
+          "action": "reset-both"
+        }
+      ],
+      "anti_spyware": [
+        {
+          "name": "AS-Standard",
+          "description": "Standard anti-spyware",
+          "dns_sinkhole": "enabled"
+        },
+        {
+          "name": "AS-Strict",
+          "description": "Strict anti-spyware",
+          "dns_sinkhole": "enabled"
+        }
+      ],
+      "vulnerability_protection": [
+        {
+          "name": "VP-Standard",
+          "description": "Standard vulnerability protection",
+          "action": "reset-both"
+        },
+        {
+          "name": "VP-Strict",
+          "description": "Strict with all severities blocked",
+          "action": "reset-both"
+        }
+      ],
+      "url_filtering": [
+        {
+          "name": "URL-Block-Profile",
+          "description": "Block malicious and adult categories",
+          "categories_blocked": [
+            "malware",
+            "phishing",
+            "adult",
+            "gambling"
+          ]
+        },
+        {
+          "name": "URL-Strict-Profile",
+          "description": "Corporate strict filtering",
+          "categories_blocked": [
+            "malware",
+            "phishing",
+            "adult",
+            "gambling",
+            "social-networking",
+            "streaming-media"
+          ]
+        }
+      ],
+      "file_blocking": [
+        {
+          "name": "FB-Standard",
+          "description": "Block dangerous file types",
+          "blocked_types": [
+            "exe",
+            "dll",
+            "bat",
+            "cmd",
+            "ps1"
+          ]
+        },
+        {
+          "name": "FB-Strict",
+          "description": "Strict file blocking",
+          "blocked_types": [
+            "exe",
+            "dll",
+            "bat",
+            "cmd",
+            "ps1",
+            "jar",
+            "vbs",
+            "js"
+          ]
+        }
+      ],
+      "profile_groups": [
+        {
+          "name": "Web-Protection",
+          "antivirus": "AV-Strict",
+          "anti_spyware": "AS-Strict",
+          "vulnerability": "VP-Standard",
+          "url_filtering": "URL-Block-Profile",
+          "file_blocking": "FB-Standard"
+        },
+        {
+          "name": "Internal-Protection",
+          "antivirus": "AV-Standard",
+          "anti_spyware": "AS-Standard",
+          "vulnerability": "VP-Standard",
+          "url_filtering": null,
+          "file_blocking": null
+        },
+        {
+          "name": "Database-Protection",
+          "antivirus": "AV-Standard",
+          "anti_spyware": "AS-Standard",
+          "vulnerability": "VP-Strict",
+          "url_filtering": null,
+          "file_blocking": null
+        },
+        {
+          "name": "Management-Protection",
+          "antivirus": "AV-Strict",
+          "anti_spyware": "AS-Strict",
+          "vulnerability": "VP-Strict",
+          "url_filtering": "URL-Strict-Profile",
+          "file_blocking": "FB-Strict"
+        }
+      ]
+    },
+    "external_dynamic_lists": [
+      {
+        "name": "EDL-Malicious-IPs",
+        "type": "IP List",
+        "source": "https://threatintel.example.com/malicious-ips.txt",
+        "refresh_interval": "hourly",
+        "entries_count": 15234
+      },
+      {
+        "name": "EDL-Tor-Exit-Nodes",
+        "type": "IP List",
+        "source": "https://threatintel.example.com/tor-exit-nodes.txt",
+        "refresh_interval": "hourly",
+        "entries_count": 1234
+      },
+      {
+        "name": "EDL-Crypto-Mining-Pools",
+        "type": "IP List",
+        "source": "https://threatintel.example.com/crypto-mining.txt",
+        "refresh_interval": "daily",
+        "entries_count": 567
+      },
+      {
+        "name": "EDL-Known-C2-Servers",
+        "type": "IP List",
+        "source": "https://threatintel.example.com/c2-servers.txt",
+        "refresh_interval": "hourly",
+        "entries_count": 8901
+      }
+    ],
+    "metrics_integration": {
+      "snmp": {
+        "enabled": true,
+        "version": "v3",
+        "community": null,
+        "auth_protocol": "SHA",
+        "priv_protocol": "AES128",
+        "trap_destinations": [
+          "10.50.1.10",
+          "10.50.1.11"
+        ]
+      },
+      "netflow": {
+        "enabled": true,
+        "version": "v9",
+        "collectors": [
+          {
+            "ip": "10.80.1.10",
+            "port": 2055,
+            "template_refresh": 60
+          }
+        ]
+      },
+      "syslog": {
+        "enabled": true,
+        "servers": [
+          {
+            "ip": "10.80.1.10",
+            "port": 514,
+            "protocol": "TCP",
+            "format": "BSD"
+          },
+          {
+            "ip": "10.80.1.11",
+            "port": 514,
+            "protocol": "UDP",
+            "format": "BSD"
+          }
+        ]
+      }
+    }
+  },
+  "summary": {
+    "total_resources": 145,
+    "aws_security_groups": 15,
+    "aws_nacls": 4,
+    "aws_tgw_attachments": 8,
+    "azure_nsgs": 5,
+    "azure_firewall_rule_collections": 6,
+    "gcp_firewall_rules": 15,
+    "gcp_network_tags": 15,
+    "palo_alto_security_rules": 19,
+    "palo_alto_zones": 8,
+    "palo_alto_address_groups": 8
+  }
+}

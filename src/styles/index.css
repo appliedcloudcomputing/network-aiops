@@ -1,0 +1,80 @@
+/**
+ * Global styles entry point
+ * Using Tailwind CSS for utility-first styling
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-slate-900 text-white;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-600 rounded-full hover:bg-slate-500;
+  }
+}
+
+/* Component layer for reusable component styles */
+@layer components {
+  /* Card base */
+  .card {
+    @apply bg-slate-800 rounded-xl border border-slate-700;
+  }
+
+  /* Button variants */
+  .btn-primary {
+    @apply bg-gradient-to-r from-cyan-500 to-blue-600 text-white
+           hover:from-cyan-600 hover:to-blue-700
+           shadow-lg shadow-cyan-500/25;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-700 text-white hover:bg-slate-600
+           border border-slate-600;
+  }
+
+  .btn-ghost {
+    @apply text-slate-400 hover:text-white hover:bg-slate-700;
+  }
+}
+
+/* Utility layer for custom utilities */
+@layer utilities {
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500;
+  }
+}

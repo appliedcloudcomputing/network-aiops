@@ -1,0 +1,2888 @@
+{
+  "metadata": {
+    "dataset": "Rule Comparison View",
+    "total_comparisons": 100,
+    "description": "Cross-platform firewall rule comparison for migration validation, compliance audits, and drift detection",
+    "comparison_types": [
+      "CROSS_PLATFORM",
+      "MIGRATION",
+      "DRIFT_DETECTION",
+      "COMPLIANCE_AUDIT",
+      "BACKUP_VALIDATION"
+    ],
+    "match_statuses": [
+      "EXACT_MATCH",
+      "PARTIAL_MATCH",
+      "MISMATCH",
+      "MISSING_SOURCE",
+      "MISSING_TARGET",
+      "EXTRA_RULE"
+    ],
+    "generated_date": "2026-01-13"
+  },
+  "rule_comparisons": [
+    {
+      "comparison_id": "CMP-0001",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-001",
+        "security_group": "sg-webapp-prod",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "443",
+        "source": "0.0.0.0/0",
+        "description": "Allow HTTPS from internet"
+      },
+      "target_rule": {
+        "rule_name": "Allow-HTTPS-Internet-Inbound",
+        "priority": 100,
+        "direction": "Inbound",
+        "access": "Allow",
+        "protocol": "Tcp",
+        "source": "Internet",
+        "destination_asg": "asg-webapp-servers",
+        "port": "443"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Rules are functionally equivalent. No action required."
+    },
+    {
+      "comparison_id": "CMP-0002",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-013",
+        "security_group": "sg-database-prod",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "5432",
+        "source": "sg-webapp-prod",
+        "description": "PostgreSQL from web tier"
+      },
+      "target_rule": {
+        "rule_name": "Allow-WebApp-to-SQL",
+        "priority": 100,
+        "direction": "Inbound",
+        "access": "Allow",
+        "protocol": "Tcp",
+        "source_asg": "asg-webapp-servers",
+        "destination_asg": "asg-database-servers",
+        "port": "5432"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Rules are functionally equivalent using security group references."
+    },
+    {
+      "comparison_id": "CMP-0003",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-049",
+        "security_group": "sg-bastion",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "22",
+        "source": "10.100.0.0/16",
+        "description": "VPN access"
+      },
+      "target_rule": {
+        "rule_name": "allow-ssh-iap",
+        "network": "vpc-production",
+        "priority": 1020,
+        "direction": "INGRESS",
+        "action": "ALLOW",
+        "source_ranges": "35.235.240.0/20",
+        "protocols": "tcp:22"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 60,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "10.100.0.0/16 (VPN CIDR)",
+          "target_value": "35.235.240.0/20 (IAP range)",
+          "impact": "Different access method - VPN vs IAP tunnel"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "GCP uses IAP for SSH access instead of VPN. Both are secure methods."
+    },
+    {
+      "comparison_id": "CMP-0004",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-062",
+        "security_group": "sg-eks-nodes",
+        "type": "Inbound",
+        "protocol": "All",
+        "port_range": "All",
+        "source": "sg-eks-nodes",
+        "description": "Node-to-node"
+      },
+      "target_rule": {
+        "rule_name": "Allow-AKS-Node-Internal",
+        "priority": 100,
+        "direction": "Inbound",
+        "access": "Allow",
+        "protocol": "*",
+        "source_asg": "asg-aks-nodes",
+        "destination_asg": "asg-aks-nodes",
+        "port": "*"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Kubernetes node-to-node communication rules are equivalent."
+    },
+    {
+      "comparison_id": "CMP-0005",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "sgr-036",
+        "security_group": "sg-alb-public",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "443",
+        "source": "0.0.0.0/0",
+        "description": "HTTPS from internet"
+      },
+      "target_rule": {
+        "rule_name": "Allow-API-Gateway-Inbound",
+        "source_zone": "Untrust",
+        "dest_zone": "DMZ",
+        "application": "ssl,web-browsing",
+        "service": "application-default",
+        "action": "allow",
+        "security_profile": "Web-Protection"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "security_inspection",
+          "source_value": "None (stateful only)",
+          "target_value": "Web-Protection profile (IPS, URL filtering)",
+          "impact": "Palo Alto provides additional L7 inspection"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Palo Alto rule includes enhanced security profile."
+    },
+    {
+      "comparison_id": "CMP-0006",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "AWS",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "sgr-004",
+        "security_group": "sg-webapp-prod",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "22",
+        "source": "10.100.0.0/16",
+        "source_type": "Terraform State"
+      },
+      "target_rule": {
+        "rule_id": "sgr-004-live",
+        "security_group": "sg-webapp-prod",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "22",
+        "source": "0.0.0.0/0",
+        "source_type": "Live AWS"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 40,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "10.100.0.0/16",
+          "target_value": "0.0.0.0/0",
+          "impact": "CRITICAL: SSH exposed to entire internet"
+        }
+      ],
+      "risk_level": "CRITICAL",
+      "recommendation": "URGENT: Revert SSH source to VPN CIDR immediately."
+    },
+    {
+      "comparison_id": "CMP-0007",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "PCI-DSS Template",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "PCI-1.3.1",
+        "requirement": "Restrict inbound traffic to CDE",
+        "expected_config": "Only allow authorized sources"
+      },
+      "target_rule": {
+        "rule_id": "sgr-pci-001",
+        "security_group": "sg-pci-cardholder",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "443",
+        "source": "10.30.0.0/16"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Rule complies with PCI-DSS 1.3.1 requirement."
+    },
+    {
+      "comparison_id": "CMP-0008",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "PCI-DSS Template",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "PCI-1.3.4",
+        "requirement": "Do not allow unauthorized outbound traffic from CDE",
+        "expected_config": "Explicit deny all outbound except authorized"
+      },
+      "target_rule": {
+        "rule_id": "sgr-pci-egress",
+        "security_group": "sg-pci-cardholder",
+        "type": "Outbound",
+        "protocol": "All",
+        "port_range": "All",
+        "source": "0.0.0.0/0"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "destination",
+          "source_value": "Explicit allow list only",
+          "target_value": "0.0.0.0/0 (any)",
+          "impact": "PCI violation: CDE can reach any destination"
+        }
+      ],
+      "risk_level": "CRITICAL",
+      "recommendation": "NON-COMPLIANT: Remove default egress rule."
+    },
+    {
+      "comparison_id": "CMP-0009",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Cisco ASA",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "ACL-WEB-IN-10",
+        "acl_name": "WEB-INBOUND",
+        "action": "permit",
+        "protocol": "tcp",
+        "source": "any",
+        "destination": "host 192.168.1.10",
+        "port": "eq 443"
+      },
+      "target_rule": {
+        "rule_id": "sgr-migrated-001",
+        "security_group": "sg-webapp-migrated",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "443",
+        "source": "0.0.0.0/0"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Rule successfully migrated."
+    },
+    {
+      "comparison_id": "CMP-0010",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Cisco ASA",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "ACL-DB-IN-20",
+        "acl_name": "DB-INBOUND",
+        "action": "permit",
+        "protocol": "tcp",
+        "source": "192.168.10.0/24",
+        "destination": "host 192.168.20.5",
+        "port": "eq 1521"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Oracle DB access rule exists",
+          "target_value": "No corresponding rule in AWS",
+          "impact": "Application will not connect to database"
+        }
+      ],
+      "risk_level": "HIGH",
+      "recommendation": "Create corresponding security group rule before migration."
+    },
+    {
+      "comparison_id": "CMP-0011",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "allow-health-check",
+        "network": "vpc-production",
+        "source_ranges": "35.191.0.0/16,130.211.0.0/22",
+        "protocols": "tcp:80,tcp:443,tcp:8080"
+      },
+      "target_rule": {
+        "rule_id": "sgr-health-001",
+        "security_group": "sg-webapp-prod",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "8080",
+        "source": "10.0.0.0/8"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 70,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "GCP LB ranges",
+          "target_value": "Internal only",
+          "impact": "Different health check source ranges"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Platform-specific health check configurations."
+    },
+    {
+      "comparison_id": "CMP-0012",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Allow-Bastion-SSH-RDP-Out",
+        "priority": 100,
+        "direction": "Outbound",
+        "protocol": "Tcp",
+        "destination": "VirtualNetwork",
+        "port": "22,3389"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Management-SSH",
+        "source_zone": "Management",
+        "dest_zone": "any",
+        "application": "ssh",
+        "service": "tcp/22",
+        "action": "allow"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 75,
+      "differences": [
+        {
+          "field": "protocols",
+          "source_value": "SSH and RDP",
+          "target_value": "SSH only",
+          "impact": "Palo Alto has separate RDP rule"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Verify Palo Alto has separate RDP rule."
+    },
+    {
+      "comparison_id": "CMP-0013",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Terraform",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Allow-SQL-to-Database",
+        "priority": 110,
+        "direction": "Outbound",
+        "port": "5432",
+        "source_type": "Terraform State"
+      },
+      "target_rule": {
+        "rule_name": "Allow-SQL-to-Database",
+        "priority": 110,
+        "direction": "Outbound",
+        "port": "5432,3306,1433",
+        "source_type": "Live Azure"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 80,
+      "differences": [
+        {
+          "field": "port",
+          "source_value": "5432",
+          "target_value": "5432,3306,1433",
+          "impact": "Additional database ports added outside Terraform"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Update Terraform configuration to include additional ports."
+    },
+    {
+      "comparison_id": "CMP-0014",
+      "comparison_type": "BACKUP_VALIDATION",
+      "source_platform": "Palo Alto",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Block-Malicious-IPs-Inbound",
+        "source_zone": "Untrust",
+        "source_address": "EDL-Malicious-IPs",
+        "action": "deny",
+        "source_type": "Running Config"
+      },
+      "target_rule": {
+        "rule_name": "Block-Malicious-IPs-Inbound",
+        "source_zone": "Untrust",
+        "source_address": "EDL-Malicious-IPs",
+        "action": "deny",
+        "source_type": "Backup Config"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Backup is current and matches running configuration."
+    },
+    {
+      "comparison_id": "CMP-0015",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-021",
+        "security_group": "sg-redis-prod",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "6379",
+        "source": "sg-webapp-prod"
+      },
+      "target_rule": {
+        "rule_name": "allow-redis-from-app",
+        "network": "vpc-production",
+        "source_tags": "app-server,web-server",
+        "target_tags": "redis-server",
+        "protocols": "tcp:6379"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Redis access rules are equivalent."
+    },
+    {
+      "comparison_id": "CMP-0016",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-027",
+        "security_group": "sg-kafka-prod",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "9092",
+        "source": "sg-webapp-prod"
+      },
+      "target_rule": {
+        "rule_name": "Allow-EventHub-Inbound",
+        "priority": 130,
+        "direction": "Inbound",
+        "destination": "EventHub",
+        "port": "9093"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 70,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Self-managed Kafka (9092)",
+          "target_value": "Azure Event Hub (9093)",
+          "impact": "Different managed service"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Update application connection strings for Event Hub."
+    },
+    {
+      "comparison_id": "CMP-0017",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "CIS Benchmark",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "CIS-4.1",
+        "requirement": "No security groups allow ingress from 0.0.0.0/0 to port 22",
+        "expected_config": "SSH not open to world"
+      },
+      "target_rule": {
+        "rule_id": "sgr-dev-ssh",
+        "security_group": "sg-dev-servers",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "22",
+        "source": "0.0.0.0/0"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "Restricted IP range",
+          "target_value": "0.0.0.0/0",
+          "impact": "CIS benchmark violation"
+        }
+      ],
+      "risk_level": "HIGH",
+      "recommendation": "Restrict SSH source to VPN CIDR."
+    },
+    {
+      "comparison_id": "CMP-0018",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "CIS Benchmark",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "CIS-4.2",
+        "requirement": "No security groups allow ingress from 0.0.0.0/0 to port 3389",
+        "expected_config": "RDP not open to world"
+      },
+      "target_rule": {
+        "rule_id": "sgr-052",
+        "security_group": "sg-bastion",
+        "type": "Outbound",
+        "protocol": "TCP",
+        "port_range": "3389",
+        "source": "10.0.0.0/8"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "RDP is restricted to internal networks only."
+    },
+    {
+      "comparison_id": "CMP-0019",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "Block-Tor-Exit-Nodes",
+        "source_zone": "Untrust",
+        "source_address": "EDL-Tor-Exit-Nodes",
+        "action": "deny"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Tor exit node blocking with EDL",
+          "target_value": "No equivalent in AWS Security Groups",
+          "impact": "AWS cannot block based on threat feeds at SG level"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Implement AWS WAF or Network Firewall for IP reputation."
+    },
+    {
+      "comparison_id": "CMP-0020",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "GCP",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "deny-ssh-public",
+        "network": "vpc-production",
+        "priority": 2000,
+        "action": "DENY",
+        "source_type": "Terraform State"
+      },
+      "target_rule": {
+        "rule_name": "deny-ssh-public",
+        "network": "vpc-production",
+        "priority": 2500,
+        "action": "DENY",
+        "source_type": "Live GCP"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 90,
+      "differences": [
+        {
+          "field": "priority",
+          "source_value": "2000",
+          "target_value": "2500",
+          "impact": "Lower priority might allow SSH if conflicting rule exists"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Restore priority to 2000."
+    },
+    {
+      "comparison_id": "CMP-0021",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Juniper SRX",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "policy-web-dmz-10",
+        "from_zone": "trust",
+        "to_zone": "dmz",
+        "application": "junos-https",
+        "action": "permit"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Web-to-App",
+        "source_zone": "DMZ",
+        "dest_zone": "Application",
+        "application": "ssl,web-browsing",
+        "action": "allow"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "zone_naming",
+          "source_value": "trust -> dmz",
+          "target_value": "DMZ -> Application",
+          "impact": "Different zone naming convention"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Zone mappings documented. Rule is functionally equivalent."
+    },
+    {
+      "comparison_id": "CMP-0022",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-087",
+        "security_group": "sg-vault",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "8200",
+        "source": "10.0.0.0/8"
+      },
+      "target_rule": {
+        "rule_name": "Allow-KeyVault-PrivateLink",
+        "priority": 430,
+        "direction": "Outbound",
+        "destination": "10.46.0.0/24",
+        "port": "443"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 40,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "HashiCorp Vault (8200)",
+          "target_value": "Azure Key Vault (443)",
+          "impact": "Different secrets management services"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Update application code to use Azure Key Vault SDK."
+    },
+    {
+      "comparison_id": "CMP-0023",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "allow-gke-master-to-nodes",
+        "source_ranges": "172.16.0.0/28",
+        "protocols": "tcp:443,tcp:10250"
+      },
+      "target_rule": {
+        "rule_name": "Allow-AKS-API-VPN",
+        "priority": 110,
+        "source": "10.100.0.0/16",
+        "port": "443"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 65,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "172.16.0.0/28 (GKE master CIDR)",
+          "target_value": "10.100.0.0/16 (VPN CIDR)",
+          "impact": "Different Kubernetes management architectures"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Both valid for respective platforms."
+    },
+    {
+      "comparison_id": "CMP-0024",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "SOC2 Template",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "SOC2-CC6.6",
+        "requirement": "Network segmentation",
+        "expected_config": "Zone-based segmentation"
+      },
+      "target_rule": {
+        "zones_configured": [
+          "Untrust",
+          "DMZ",
+          "Trust",
+          "Application",
+          "Database",
+          "Management",
+          "VPN",
+          "Container"
+        ],
+        "inter_zone_rules": 115,
+        "default_action": "deny"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Network segmentation exceeds SOC2 requirements with 8 zones."
+    },
+    {
+      "comparison_id": "CMP-0025",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Azure",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Deny-All-Inbound-Default",
+        "priority": 4093,
+        "access": "Deny",
+        "source_type": "ARM Template"
+      },
+      "target_rule": {
+        "rule_name": "Deny-All-Inbound-Default",
+        "priority": 4093,
+        "access": "Deny",
+        "source_type": "Live Azure"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Default deny rule intact. No drift detected."
+    },
+    {
+      "comparison_id": "CMP-0026",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "sgr-081",
+        "security_group": "sg-splunk",
+        "type": "Inbound",
+        "port_range": "8000",
+        "source": "10.100.0.0/16"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Splunk-Logging",
+        "source_zone": "any",
+        "dest_zone": "Trust",
+        "service": "tcp/9997,tcp/8088",
+        "action": "allow"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 60,
+      "differences": [
+        {
+          "field": "purpose",
+          "source_value": "Web UI access (8000)",
+          "target_value": "Log forwarding (9997, 8088)",
+          "impact": "Rules serve different purposes"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "These are complementary rules."
+    },
+    {
+      "comparison_id": "CMP-0027",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-008",
+        "security_group": "sg-webapp-prod",
+        "type": "Outbound",
+        "protocol": "TCP",
+        "port_range": "443",
+        "source": "0.0.0.0/0"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Explicit HTTPS egress rule",
+          "target_value": "No explicit rule (GCP allows egress by default)",
+          "impact": "GCP default allows all egress"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "GCP allows egress by default. No action required."
+    },
+    {
+      "comparison_id": "CMP-0028",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "Allow-AppGW-Health-Probe",
+        "priority": 120,
+        "source": "GatewayManager",
+        "port": "65200-65535"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Azure Application Gateway health probe ports",
+          "target_value": "No equivalent in AWS",
+          "impact": "AWS ALB uses different health check mechanism"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "AWS ALB uses target group port configuration. No AWS rule needed."
+    },
+    {
+      "comparison_id": "CMP-0029",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "HIPAA Template",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "HIPAA-164.312(e)(1)",
+        "requirement": "Technical security measures for ePHI",
+        "expected_config": "Encryption in transit"
+      },
+      "target_rule": {
+        "rule_id": "sgr-hipaa-001",
+        "security_group": "sg-healthcare-app",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "443",
+        "source": "10.200.0.0/16"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Rule enforces HTTPS only. Verify TLS 1.2+ at application level."
+    },
+    {
+      "comparison_id": "CMP-0030",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Palo Alto",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Allow-Payment-Provider",
+        "dest_address": "AG-Payment-Providers",
+        "source_type": "Committed Config"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Payment-Provider",
+        "dest_address": "any",
+        "source_type": "Running Config"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 70,
+      "differences": [
+        {
+          "field": "dest_address",
+          "source_value": "AG-Payment-Providers",
+          "target_value": "any",
+          "impact": "CRITICAL: Payment servers can reach any external destination"
+        }
+      ],
+      "risk_level": "CRITICAL",
+      "recommendation": "URGENT: Revert destination to AG-Payment-Providers."
+    },
+    {
+      "comparison_id": "CMP-0031",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "allow-prometheus-scrape",
+        "protocols": "tcp:9100,tcp:9090,tcp:9093"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Monitoring-Prometheus",
+        "service": "tcp/9100,tcp/9090",
+        "action": "allow"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "ports",
+          "source_value": "9100, 9090, 9093",
+          "target_value": "9100, 9090",
+          "impact": "AlertManager port (9093) missing from Palo Alto rule"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Add port 9093 to Palo Alto rule for AlertManager."
+    },
+    {
+      "comparison_id": "CMP-0032",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Checkpoint",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "rule-45",
+        "name": "DB-Backup-to-NAS",
+        "source": "DB-Servers",
+        "destination": "NAS-Storage",
+        "service": "NFS"
+      },
+      "target_rule": {
+        "rule_name": "Allow-NetApp-Files",
+        "priority": 530,
+        "source_asg": "asg-webapp-servers",
+        "destination": "10.48.0.0/24",
+        "port": "2049"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 75,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "DB-Servers",
+          "target_value": "asg-webapp-servers",
+          "impact": "Different source group"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Create dedicated asg-database-servers ASG."
+    },
+    {
+      "comparison_id": "CMP-0033",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-076",
+        "security_group": "sg-jenkins",
+        "type": "Inbound",
+        "port_range": "8080",
+        "source": "10.100.0.0/16"
+      },
+      "target_rule": {
+        "rule_name": "Allow-DevOps-Agent",
+        "priority": 300,
+        "direction": "Outbound",
+        "destination": "AzureDevOps",
+        "port": "443"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 30,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Jenkins (self-hosted, 8080)",
+          "target_value": "Azure DevOps (managed, 443)",
+          "impact": "Different CI/CD platforms"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Different CI/CD architectures. Both valid."
+    },
+    {
+      "comparison_id": "CMP-0034",
+      "comparison_type": "BACKUP_VALIDATION",
+      "source_platform": "AWS",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "sgr-036",
+        "security_group": "sg-alb-public",
+        "type": "Inbound",
+        "port_range": "443",
+        "source": "0.0.0.0/0",
+        "source_type": "Live AWS"
+      },
+      "target_rule": {
+        "rule_id": "sgr-036-backup",
+        "security_group": "sg-alb-public",
+        "type": "Inbound",
+        "port_range": "443",
+        "source": "0.0.0.0/0",
+        "source_type": "Terraform State Backup"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Backup matches live configuration."
+    },
+    {
+      "comparison_id": "CMP-0035",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "NIST 800-53",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "SC-7(5)",
+        "requirement": "Deny network communications by default",
+        "expected_config": "Default deny with explicit allow"
+      },
+      "target_rule": {
+        "rule_name": "deny-all-ingress",
+        "network": "vpc-production",
+        "priority": 65534,
+        "action": "DENY",
+        "logging": "ON"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "GCP VPC implements default deny. Compliant with NIST SC-7(5)."
+    },
+    {
+      "comparison_id": "CMP-0036",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "Allow-GlobalProtect-VPN",
+        "source_zone": "Untrust",
+        "application": "ipsec,ssl-vpn",
+        "service": "tcp/443,udp/4501"
+      },
+      "target_rule": {
+        "rule_name": "allow-onprem-vpn-tunnel",
+        "source_ranges": "172.16.0.0/12",
+        "protocols": "all"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 50,
+      "differences": [
+        {
+          "field": "vpn_type",
+          "source_value": "GlobalProtect SSL VPN (client-to-site)",
+          "target_value": "Cloud VPN (site-to-site)",
+          "impact": "Different VPN architectures"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "GCP uses Cloud VPN for site-to-site. Client VPN handled separately."
+    },
+    {
+      "comparison_id": "CMP-0037",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-019",
+        "security_group": "sg-database-prod",
+        "type": "Outbound",
+        "protocol": "TCP",
+        "port_range": "443",
+        "source": "pl-63a5400a"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Storage-Backup-DB",
+        "priority": 100,
+        "direction": "Outbound",
+        "destination": "Storage",
+        "port": "443"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Both rules allow database backup to cloud storage."
+    },
+    {
+      "comparison_id": "CMP-0038",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "AWS",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "sgr-063",
+        "port_range": "443",
+        "source_type": "CloudFormation"
+      },
+      "target_rule": {
+        "rule_id": "sgr-063-live",
+        "port_range": "443,8443,9443",
+        "source_type": "Live AWS"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 80,
+      "differences": [
+        {
+          "field": "port_range",
+          "source_value": "443",
+          "target_value": "443,8443,9443",
+          "impact": "Additional webhook ports added"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Additional ports for admission webhooks. Update CloudFormation template."
+    },
+    {
+      "comparison_id": "CMP-0039",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "Allow-FrontDoor-Inbound",
+        "source": "AzureFrontDoor.Backend",
+        "port": "443"
+      },
+      "target_rule": {
+        "rule_name": "allow-https-ingress",
+        "source_ranges": "0.0.0.0/0",
+        "protocols": "tcp:443"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 70,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "AzureFrontDoor.Backend (service tag)",
+          "target_value": "0.0.0.0/0 (any)",
+          "impact": "Azure restricts to Front Door IPs, GCP allows all"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Implement GCP Cloud Armor for IP restriction."
+    },
+    {
+      "comparison_id": "CMP-0040",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "Block-Social-Media-Egress",
+        "application": "facebook-base,twitter-base,tiktok-base,instagram-base",
+        "action": "deny"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "App-ID based social media blocking",
+          "target_value": "No equivalent in AWS Security Groups",
+          "impact": "AWS cannot block by application type"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Implement AWS Network Firewall with domain filtering."
+    },
+    {
+      "comparison_id": "CMP-0041",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises F5 BIG-IP",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "vs-web-443",
+        "destination": "10.1.1.100:443",
+        "pool": "pool_webapp",
+        "ssl_profile": "clientssl-secure",
+        "waf_policy": "webapp-asm"
+      },
+      "target_rule": {
+        "rule_id": "alb-rule-001",
+        "type": "ALB Listener Rule",
+        "protocol": "HTTPS",
+        "port": "443",
+        "ssl_policy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
+        "waf": "webacl-webapp"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "waf",
+          "source_value": "F5 ASM policy",
+          "target_value": "AWS WAF WebACL",
+          "impact": "Different WAF platforms"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Verify WAF rules migrated correctly."
+    },
+    {
+      "comparison_id": "CMP-0042",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "ISO 27001 Template",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "A.13.1.1",
+        "requirement": "Network controls",
+        "expected_config": "NSG rules with logging enabled"
+      },
+      "target_rule": {
+        "nsg_name": "nsg-production",
+        "diagnostic_settings": "enabled",
+        "flow_logs": "enabled",
+        "retention_days": 90
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "NSG logging enabled with 90-day retention. Compliant with ISO 27001 A.13.1.1."
+    },
+    {
+      "comparison_id": "CMP-0043",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-091",
+        "security_group": "sg-elasticsearch",
+        "port_range": "9200",
+        "source": "sg-webapp-prod"
+      },
+      "target_rule": {
+        "rule_name": "allow-elasticsearch-from-app",
+        "source_tags": "app-server,analytics-server",
+        "target_tags": "elasticsearch-node",
+        "protocols": "tcp:9200"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 90,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "sg-webapp-prod only",
+          "target_value": "app-server,analytics-server",
+          "impact": "GCP includes analytics servers"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "GCP rule is more permissive. Consider if analytics access is needed in AWS."
+    },
+    {
+      "comparison_id": "CMP-0044",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "GCP",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "allow-internal-all",
+        "source_ranges": "10.0.0.0/8",
+        "source_type": "Deployment Manager"
+      },
+      "target_rule": {
+        "rule_name": "allow-internal-all",
+        "source_ranges": "10.0.0.0/8,172.16.0.0/12",
+        "source_type": "Live GCP"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "source_ranges",
+          "source_value": "10.0.0.0/8",
+          "target_value": "10.0.0.0/8,172.16.0.0/12",
+          "impact": "Additional RFC1918 range added"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Verify 172.16.0.0/12 addition is intentional for VPN. Update Deployment Manager."
+    },
+    {
+      "comparison_id": "CMP-0045",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Allow-DNS-Outbound",
+        "dest_address": "AG-DNS-Servers",
+        "application": "dns",
+        "security_profile": "DNS-Protection"
+      },
+      "target_rule": {
+        "rule_name": "Allow-DNS-Outbound",
+        "priority": 200,
+        "destination": "168.63.129.16",
+        "port": "53"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 80,
+      "differences": [
+        {
+          "field": "destination",
+          "source_value": "AG-DNS-Servers (custom DNS)",
+          "target_value": "168.63.129.16 (Azure DNS)",
+          "impact": "Different DNS infrastructure"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Implement Azure Firewall for DNS security features."
+    },
+    {
+      "comparison_id": "CMP-0046",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-103",
+        "security_group": "sg-efs-prod",
+        "port_range": "2049",
+        "source": "sg-eks-nodes"
+      },
+      "target_rule": {
+        "rule_name": "allow-nfs-from-app",
+        "source_tags": "app-server,web-server",
+        "target_tags": "filestore-client",
+        "protocols": "tcp:2049,tcp:111,udp:111"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "ports",
+          "source_value": "2049 only",
+          "target_value": "2049, 111 (portmapper)",
+          "impact": "GCP Filestore requires additional portmapper ports"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "GCP Filestore requires portmapper (111)."
+    },
+    {
+      "comparison_id": "CMP-0047",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "FedRAMP Template",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "SC-7",
+        "requirement": "Boundary Protection",
+        "expected_config": "VPC Flow Logs enabled"
+      },
+      "target_rule": {
+        "vpc_id": "vpc-prod-us-east-1",
+        "flow_logs": "enabled",
+        "destination": "s3://security-logs-bucket/",
+        "traffic_type": "ALL",
+        "retention_days": 365
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "VPC Flow Logs enabled with 365-day retention. Compliant with FedRAMP SC-7."
+    },
+    {
+      "comparison_id": "CMP-0048",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Allow-AVD-HostPool",
+        "source": "WindowsVirtualDesktop",
+        "port": "3389"
+      },
+      "target_rule": {
+        "rule_name": "Allow-VPN-RDP",
+        "source_zone": "VPN",
+        "application": "ms-rdp",
+        "service": "tcp/3389"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 65,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "WindowsVirtualDesktop service",
+          "target_value": "VPN users",
+          "impact": "Different remote desktop architectures"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Different remote access architectures. Both provide secure RDP."
+    },
+    {
+      "comparison_id": "CMP-0049",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Palo Alto",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Default-Deny-All",
+        "action": "deny",
+        "position": "last",
+        "source_type": "Panorama Template"
+      },
+      "target_rule": {
+        "rule_name": "Default-Deny-All",
+        "action": "deny",
+        "position": "last",
+        "source_type": "Firewall Running Config"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Default deny rule intact. Panorama template matches firewall."
+    },
+    {
+      "comparison_id": "CMP-0050",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "pci-deny-all-egress",
+        "network": "vpc-pci",
+        "priority": 65534,
+        "direction": "EGRESS",
+        "action": "DENY"
+      },
+      "target_rule": {
+        "rule_id": "nacl-pci-egress-deny",
+        "network_acl": "nacl-pci-subnet",
+        "type": "Outbound",
+        "rule_number": 32767,
+        "action": "DENY"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Both platforms implement default deny egress for PCI environment."
+    },
+    {
+      "comparison_id": "CMP-0051",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Fortinet",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "policy-10",
+        "name": "LAN-to-Internet",
+        "service": "HTTPS,HTTP,DNS",
+        "action": "accept",
+        "utm_status": "enable",
+        "av_profile": "default",
+        "webfilter_profile": "corp-filter"
+      },
+      "target_rule": {
+        "rule_name": "Allow-HTTPS-Outbound",
+        "priority": 100,
+        "direction": "Outbound",
+        "destination": "Internet",
+        "port": "443"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 60,
+      "differences": [
+        {
+          "field": "utm_features",
+          "source_value": "AV, Web Filter enabled",
+          "target_value": "None (NSG is stateful firewall only)",
+          "impact": "Azure NSG lacks UTM features"
+        }
+      ],
+      "risk_level": "HIGH",
+      "recommendation": "Implement Azure Firewall Premium for UTM features."
+    },
+    {
+      "comparison_id": "CMP-0052",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-111",
+        "security_group": "sg-emr-master",
+        "port_range": "8998",
+        "source": "10.100.0.0/16"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Databricks-Cluster",
+        "priority": 230,
+        "source_asg": "asg-databricks-nodes",
+        "destination_asg": "asg-databricks-nodes",
+        "port": "*"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 40,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "EMR with Livy (8998)",
+          "target_value": "Databricks cluster internal",
+          "impact": "Different big data platforms"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Different managed analytics services."
+    },
+    {
+      "comparison_id": "CMP-0053",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "GDPR Template",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "GDPR-Art32",
+        "requirement": "Security of processing",
+        "expected_config": "Network segmentation for personal data"
+      },
+      "target_rule": {
+        "networks": [
+          "vpc-production",
+          "vpc-pci",
+          "vpc-development"
+        ],
+        "pii_subnet": "10.50.0.0/24",
+        "firewall_rules": "PII access restricted"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Network segmentation in place. Compliant with GDPR Article 32."
+    },
+    {
+      "comparison_id": "CMP-0054",
+      "comparison_type": "BACKUP_VALIDATION",
+      "source_platform": "Azure",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Deny-Outbound-Default",
+        "priority": 4094,
+        "access": "Deny",
+        "destination": "Internet",
+        "source_type": "Live Azure"
+      },
+      "target_rule": {
+        "rule_name": "Deny-Outbound-Default",
+        "priority": 4094,
+        "access": "Deny",
+        "destination": "Internet",
+        "source_type": "Azure Backup"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Backup current. Default deny egress rule intact."
+    },
+    {
+      "comparison_id": "CMP-0055",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "Allow-Elasticsearch-From-App",
+        "application": "elasticsearch",
+        "service": "tcp/9200",
+        "security_profile": "Database-Protection"
+      },
+      "target_rule": {
+        "rule_name": "allow-elasticsearch-from-app",
+        "source_tags": "app-server,analytics-server",
+        "target_tags": "elasticsearch-node",
+        "protocols": "tcp:9200",
+        "logging": "ON"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "application_awareness",
+          "source_value": "App-ID: elasticsearch",
+          "target_value": "Port-based only",
+          "impact": "GCP cannot inspect Elasticsearch protocol"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "GCP uses port-based filtering."
+    },
+    {
+      "comparison_id": "CMP-0056",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "AWS",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "sgr-078",
+        "source": "140.82.112.0/20",
+        "source_type": "Terraform State"
+      },
+      "target_rule": {
+        "rule_id": "sgr-078-live",
+        "source": "140.82.112.0/20,185.199.108.0/22,192.30.252.0/22",
+        "source_type": "Live AWS"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "140.82.112.0/20",
+          "target_value": "140.82.112.0/20,185.199.108.0/22,192.30.252.0/22",
+          "impact": "Additional GitHub IP ranges added"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Additional GitHub IP ranges are legitimate. Update Terraform."
+    },
+    {
+      "comparison_id": "CMP-0057",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-115",
+        "security_group": "sg-redshift",
+        "port_range": "5439",
+        "source": "sg-analytics-prod"
+      },
+      "target_rule": {
+        "rule_name": "allow-bigquery-from-analytics",
+        "direction": "EGRESS",
+        "source_tags": "analytics-server",
+        "protocols": "tcp:443"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 30,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Redshift (port 5439)",
+          "target_value": "BigQuery (HTTPS API)",
+          "impact": "Different data warehouse platforms"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "BigQuery uses HTTPS API. Update application connection method."
+    },
+    {
+      "comparison_id": "CMP-0058",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "Allow-AzureAD-Auth",
+        "priority": 470,
+        "destination": "AzureActiveDirectory",
+        "port": "443"
+      },
+      "target_rule": {
+        "rule_id": "sgr-cognito-001",
+        "security_group": "sg-webapp-prod",
+        "type": "Outbound",
+        "port_range": "443",
+        "source": "0.0.0.0/0"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 70,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Azure AD (service tag)",
+          "target_value": "Cognito + external IdP (any HTTPS)",
+          "impact": "Different identity providers"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "AWS lacks service-specific endpoints for Cognito."
+    },
+    {
+      "comparison_id": "CMP-0059",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "SOX Template",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "SOX-ITGCs",
+        "requirement": "IT General Controls - Logical access",
+        "expected_config": "Segregation of duties, access logging"
+      },
+      "target_rule": {
+        "admin_access": "Role-based",
+        "change_logging": "All commits logged",
+        "audit_trail": "Configuration changes tracked"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Firewall management implements role segregation and change tracking. Compliant with SOX ITGC."
+    },
+    {
+      "comparison_id": "CMP-0060",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "dev-deny-prod-access",
+        "network": "vpc-development",
+        "priority": 900,
+        "direction": "EGRESS",
+        "action": "DENY"
+      },
+      "target_rule": {
+        "rule_name": "Block-Dev-to-Prod",
+        "source_zone": "Development",
+        "dest_zone": "Production",
+        "action": "deny"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Environment isolation rules are equivalent."
+    },
+    {
+      "comparison_id": "CMP-0061",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises SonicWall",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "rule-25",
+        "name": "Allow-FTP-Partner",
+        "service": "FTP",
+        "action": "Allow"
+      },
+      "target_rule": {
+        "rule_id": "sgr-sftp-001",
+        "security_group": "sg-sftp-servers",
+        "type": "Inbound",
+        "protocol": "TCP",
+        "port_range": "22",
+        "source": "203.0.113.0/24"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 75,
+      "differences": [
+        {
+          "field": "protocol",
+          "source_value": "FTP (ports 20,21)",
+          "target_value": "SFTP (port 22)",
+          "impact": "Upgraded to secure file transfer"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Migration upgraded FTP to SFTP. Verify partners updated their clients."
+    },
+    {
+      "comparison_id": "CMP-0062",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Azure",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Allow-SQL-MI-Inbound",
+        "source_asg": "asg-api-servers",
+        "port": "1433",
+        "source_type": "Bicep Template"
+      },
+      "target_rule": {
+        "rule_name": "Allow-SQL-MI-Inbound",
+        "source_asg": "asg-api-servers,asg-webapp-servers",
+        "port": "1433",
+        "source_type": "Live Azure"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 85,
+      "differences": [
+        {
+          "field": "source_asg",
+          "source_value": "asg-api-servers",
+          "target_value": "asg-api-servers,asg-webapp-servers",
+          "impact": "Additional ASG granted database access"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Verify webapp servers need direct SQL MI access. Update Bicep if legitimate."
+    },
+    {
+      "comparison_id": "CMP-0063",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "sgr-099",
+        "security_group": "sg-lambda-vpc",
+        "type": "Outbound",
+        "port_range": "5432",
+        "source": "sg-database-prod"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Lambda function database access",
+          "target_value": "No equivalent - Lambda not in Palo Alto architecture",
+          "impact": "Serverless workload not applicable"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Lambda is AWS-specific serverless. No equivalent needed."
+    },
+    {
+      "comparison_id": "CMP-0064",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "HITRUST Template",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "09.m",
+        "requirement": "Network Connection Control",
+        "expected_config": "Restrict connections between trusted and untrusted networks"
+      },
+      "target_rule": {
+        "security_groups": 120,
+        "default_deny": true,
+        "internet_facing_rules": 5,
+        "all_rules_documented": true
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Security groups implement network segmentation. Compliant with HITRUST 09.m."
+    },
+    {
+      "comparison_id": "CMP-0065",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "allow-dataflow-workers",
+        "source_tags": "dataflow-worker",
+        "target_tags": "dataflow-worker",
+        "protocols": "tcp:12345-12346"
+      },
+      "target_rule": {
+        "rule_name": "Allow-DataFactory-Inbound",
+        "priority": 220,
+        "source": "DataFactory",
+        "destination_asg": "asg-database-servers",
+        "port": "5432"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 25,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "GCP Dataflow (Apache Beam)",
+          "target_value": "Azure Data Factory",
+          "impact": "Different data processing services"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Different managed data processing services with different network patterns."
+    },
+    {
+      "comparison_id": "CMP-0066",
+      "comparison_type": "BACKUP_VALIDATION",
+      "source_platform": "GCP",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "allow-gke-node-to-node",
+        "source_tags": "gke-prod-cluster-nodes",
+        "target_tags": "gke-prod-cluster-nodes",
+        "protocols": "all",
+        "source_type": "Live GCP"
+      },
+      "target_rule": {
+        "rule_name": "allow-gke-node-to-node",
+        "source_tags": "gke-prod-cluster-nodes",
+        "target_tags": "gke-prod-cluster-nodes",
+        "protocols": "all",
+        "source_type": "GCS State Backup"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Backup matches live configuration. GKE cluster rules intact."
+    },
+    {
+      "comparison_id": "CMP-0067",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-108",
+        "security_group": "sg-neptune-prod",
+        "port_range": "8182",
+        "source": "sg-api-gateway"
+      },
+      "target_rule": {
+        "rule_name": "Allow-CosmosDB-Gremlin",
+        "priority": 155,
+        "destination": "10.45.0.0/24",
+        "port": "443"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 70,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Neptune (port 8182)",
+          "target_value": "CosmosDB Gremlin API (port 443)",
+          "impact": "Different graph databases"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Verify Gremlin query compatibility between Neptune and CosmosDB."
+    },
+    {
+      "comparison_id": "CMP-0068",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "Allow-HA-Sync",
+        "source_zone": "Trust",
+        "dest_zone": "Trust",
+        "source_address": "AG-PA-Firewalls",
+        "dest_address": "AG-PA-Firewalls",
+        "application": "panos-ha"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Palo Alto HA synchronization",
+          "target_value": "No equivalent - AWS uses managed services",
+          "impact": "AWS security groups don't require HA sync"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "AWS security groups are managed services without HA sync requirements."
+    },
+    {
+      "comparison_id": "CMP-0069",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Palo Alto",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Allow-SFTP-Partner-Inbound",
+        "source_address": "AG-Partner-Networks",
+        "source_type": "Panorama Pushed Config"
+      },
+      "target_rule": {
+        "rule_name": "Allow-SFTP-Partner-Inbound",
+        "source_address": "any",
+        "source_type": "Firewall Running Config"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 70,
+      "differences": [
+        {
+          "field": "source_address",
+          "source_value": "AG-Partner-Networks (specific IPs)",
+          "target_value": "any",
+          "impact": "CRITICAL: SFTP server exposed to entire internet"
+        }
+      ],
+      "risk_level": "CRITICAL",
+      "recommendation": "URGENT: Restore source restriction to AG-Partner-Networks."
+    },
+    {
+      "comparison_id": "CMP-0070",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "Allow-Defender-Scan",
+        "priority": 410,
+        "source": "SecurityCenter",
+        "destination": "VirtualNetwork",
+        "port": "443"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Azure Defender vulnerability scanning",
+          "target_value": "No equivalent firewall rule",
+          "impact": "GCP uses agent-based scanning"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "GCP uses agent-based scanning (Security Command Center). No inbound rule required."
+    },
+    {
+      "comparison_id": "CMP-0071",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "PCI-DSS 4.0 Template",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "1.4.2",
+        "requirement": "Network security controls restrict inbound traffic",
+        "expected_config": "Explicit allow rules only, default deny"
+      },
+      "target_rule": {
+        "total_rules": 115,
+        "explicit_allow": 94,
+        "explicit_deny": 6,
+        "default_deny": true,
+        "last_rule": "Default-Deny-All"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Firewall implements explicit allow with default deny. Compliant with PCI-DSS 4.0."
+    },
+    {
+      "comparison_id": "CMP-0072",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Cisco Firepower",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "AC-Policy-15",
+        "name": "Allow-DNS-Outbound",
+        "dest_networks": "DNS-Servers",
+        "services": "DNS",
+        "ips_policy": "Balanced-Security"
+      },
+      "target_rule": {
+        "rule_name": "allow-dns-from-all",
+        "target_tags": "dns-server",
+        "source_ranges": "10.0.0.0/8",
+        "protocols": "tcp:53,udp:53"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 75,
+      "differences": [
+        {
+          "field": "ips_inspection",
+          "source_value": "Balanced-Security IPS policy",
+          "target_value": "None (port-based only)",
+          "impact": "GCP lacks native IPS for DNS"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Consider Cloud IDS for DNS inspection."
+    },
+    {
+      "comparison_id": "CMP-0073",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-117",
+        "security_group": "sg-batch-compute",
+        "type": "Outbound",
+        "port_range": "443",
+        "source": "0.0.0.0/0"
+      },
+      "target_rule": {
+        "rule_name": "Allow-BatchAI-Nodes",
+        "priority": 250,
+        "direction": "Inbound",
+        "source_asg": "asg-batch-nodes",
+        "destination_asg": "asg-batch-nodes",
+        "port": "*"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 35,
+      "differences": [
+        {
+          "field": "direction",
+          "source_value": "Egress to AWS services",
+          "target_value": "Inter-node communication",
+          "impact": "Different batch computing architectures"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Different batch computing patterns. Add Azure egress rule if needed."
+    },
+    {
+      "comparison_id": "CMP-0074",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "GCP",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "pci-allow-payment-api",
+        "source_ranges": "10.30.0.0/16",
+        "protocols": "tcp:443",
+        "source_type": "Terraform State"
+      },
+      "target_rule": {
+        "rule_name": "pci-allow-payment-api",
+        "source_ranges": "10.30.0.0/16",
+        "protocols": "tcp:443",
+        "logging": "ON",
+        "source_type": "Live GCP"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 95,
+      "differences": [
+        {
+          "field": "logging",
+          "source_value": "Not specified",
+          "target_value": "ON",
+          "impact": "Logging enabled outside Terraform"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Logging enhancement is positive. Update Terraform."
+    },
+    {
+      "comparison_id": "CMP-0075",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Allow-Okta-SSO",
+        "dest_address": "AG-Okta-IPs",
+        "application": "ssl",
+        "security_profile": "SSO-Protection"
+      },
+      "target_rule": {
+        "rule_name": "Allow-AzureAD-Auth",
+        "priority": 470,
+        "destination": "AzureActiveDirectory",
+        "port": "443"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 65,
+      "differences": [
+        {
+          "field": "identity_provider",
+          "source_value": "Okta",
+          "target_value": "Azure AD",
+          "impact": "Different identity providers"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Different IdP platforms. Both provide enterprise SSO."
+    },
+    {
+      "comparison_id": "CMP-0076",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-114",
+        "security_group": "sg-sagemaker",
+        "type": "Inbound",
+        "port_range": "443",
+        "source": "10.100.0.0/16"
+      },
+      "target_rule": {
+        "rule_name": "allow-vertex-ai-notebooks",
+        "source_ranges": "10.100.0.0/16",
+        "target_tags": "vertex-notebook",
+        "protocols": "tcp:443"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "ML notebook access rules are equivalent. AWS SageMaker maps to GCP Vertex AI."
+    },
+    {
+      "comparison_id": "CMP-0077",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "CMMC Level 2 Template",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "SC.L2-3.13.1",
+        "requirement": "Monitor, control, and protect communications at external boundaries",
+        "expected_config": "Boundary protection with monitoring"
+      },
+      "target_rule": {
+        "vpc_id": "vpc-gov-workloads",
+        "flow_logs": "enabled",
+        "guardduty": "enabled",
+        "security_hub": "enabled",
+        "waf": "enabled"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "AWS implements comprehensive boundary protection. Compliant with CMMC SC.L2-3.13.1."
+    },
+    {
+      "comparison_id": "CMP-0078",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "allow-cloud-run-invoker",
+        "source_ranges": "35.199.192.0/19",
+        "target_tags": "cloud-run-connector",
+        "protocols": "tcp:443"
+      },
+      "target_rule": {
+        "rule_id": "sgr-apprunner-001",
+        "security_group": "sg-apprunner",
+        "type": "Inbound",
+        "port_range": "8080",
+        "source": "sg-alb-internal"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 60,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Cloud Run (serverless containers)",
+          "target_value": "App Runner (container service)",
+          "impact": "Similar services, different architectures"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Similar serverless container services. Verify application port configuration."
+    },
+    {
+      "comparison_id": "CMP-0079",
+      "comparison_type": "BACKUP_VALIDATION",
+      "source_platform": "Palo Alto",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Allow-K8s-Node-Internal",
+        "source_zone": "Container",
+        "dest_zone": "Container",
+        "source_type": "Firewall Running Config"
+      },
+      "target_rule": {
+        "rule_name": "Allow-K8s-Node-Internal",
+        "source_zone": "Container",
+        "dest_zone": "Container",
+        "source_type": "Panorama Config Export"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Panorama backup matches running configuration."
+    },
+    {
+      "comparison_id": "CMP-0080",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "AWS",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "sgr-054",
+        "security_group": "sg-monitoring",
+        "type": "Inbound",
+        "port_range": "3000",
+        "source": "10.100.0.0/16",
+        "source_type": "AWS Config History"
+      },
+      "target_rule": {
+        "rule_id": "sgr-054-current",
+        "security_group": "sg-monitoring",
+        "type": "Inbound",
+        "port_range": "3000",
+        "source": "0.0.0.0/0",
+        "source_type": "Live AWS"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 50,
+      "differences": [
+        {
+          "field": "source",
+          "source_value": "10.100.0.0/16 (VPN only)",
+          "target_value": "0.0.0.0/0 (any)",
+          "impact": "HIGH: Grafana exposed to internet"
+        }
+      ],
+      "risk_level": "HIGH",
+      "recommendation": "Restrict Grafana access to VPN CIDR."
+    },
+    {
+      "comparison_id": "CMP-0081",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Allow-Purview-Scan",
+        "priority": 560,
+        "direction": "Outbound",
+        "destination": "AzurePurview",
+        "port": "443"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "Azure Purview data governance scanning",
+          "target_value": "No equivalent",
+          "impact": "Azure-specific data governance service"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Azure Purview is Azure-native. On-premises uses different data governance tools."
+    },
+    {
+      "comparison_id": "CMP-0082",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Barracuda",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "waf-rule-1",
+        "name": "Block-SQLi",
+        "match_condition": "SQL injection patterns",
+        "action": "Block"
+      },
+      "target_rule": {
+        "waf_policy": "policy-webapp",
+        "managed_ruleset": "OWASP_3.2",
+        "rule_group": "REQUEST-942-APPLICATION-ATTACK-SQLI",
+        "action": "Block"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "SQL injection protection migrated to Azure WAF OWASP managed rules."
+    },
+    {
+      "comparison_id": "CMP-0083",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "allow-composer-airflow",
+        "source_ranges": "10.100.0.0/16",
+        "target_tags": "composer-worker",
+        "protocols": "tcp:8080"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Airflow-VPN",
+        "source_zone": "VPN",
+        "dest_zone": "Application",
+        "dest_address": "AG-Airflow-Servers",
+        "service": "tcp/8080"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Airflow web UI access rules are equivalent across platforms."
+    },
+    {
+      "comparison_id": "CMP-0084",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "NIST CSF Template",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "PR.AC-5",
+        "requirement": "Network integrity is protected, incorporating segregation",
+        "expected_config": "Network segmentation for critical systems"
+      },
+      "target_rule": {
+        "vpcs": 5,
+        "subnets": 25,
+        "firewall_rules": 110,
+        "shared_vpc": "enabled",
+        "private_google_access": "enabled"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "GCP implements comprehensive network segmentation. Compliant with NIST CSF PR.AC-5."
+    },
+    {
+      "comparison_id": "CMP-0085",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "sgr-070",
+        "security_group": "sg-eks-nodes",
+        "type": "Outbound",
+        "port_range": "5432",
+        "source": "sg-database-prod"
+      },
+      "target_rule": {
+        "rule_name": "Allow-App-to-DB-Postgres",
+        "source_zone": "Container",
+        "dest_zone": "Database",
+        "application": "postgres",
+        "service": "tcp/5432",
+        "security_profile": "Database-Protection"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 90,
+      "differences": [
+        {
+          "field": "application_awareness",
+          "source_value": "Port-based (TCP/5432)",
+          "target_value": "App-ID (postgres)",
+          "impact": "Palo Alto can identify PostgreSQL protocol"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Functionally equivalent. Palo Alto provides additional App-ID visibility."
+    },
+    {
+      "comparison_id": "CMP-0086",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Azure",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Allow-Prometheus-Scrape-All",
+        "priority": 100,
+        "direction": "Outbound",
+        "port": "9100",
+        "source_type": "ARM Template"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Prometheus-Scrape-All",
+        "priority": 100,
+        "direction": "Outbound",
+        "port": "9100,9090,9093,9104,9187",
+        "source_type": "Live Azure"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 80,
+      "differences": [
+        {
+          "field": "port",
+          "source_value": "9100 only",
+          "target_value": "9100,9090,9093,9104,9187",
+          "impact": "Additional exporter ports added"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Additional Prometheus exporter ports are legitimate. Update ARM template."
+    },
+    {
+      "comparison_id": "CMP-0087",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "sgr-105",
+        "security_group": "sg-msk-prod",
+        "port_range": "9094",
+        "source": "sg-webapp-prod"
+      },
+      "target_rule": {
+        "rule_name": "Allow-EventHub-Kafka-Auth",
+        "priority": 135,
+        "destination": "EventHub",
+        "port": "9093"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 80,
+      "differences": [
+        {
+          "field": "port",
+          "source_value": "9094 (MSK SASL/SCRAM)",
+          "target_value": "9093 (Event Hub Kafka)",
+          "impact": "Different SASL port configuration"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Event Hub uses 9093 for Kafka SASL. Update client configurations."
+    },
+    {
+      "comparison_id": "CMP-0088",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "Block-P2P-Applications",
+        "application": "bittorrent,emule,gnutella",
+        "action": "deny"
+      },
+      "target_rule": null,
+      "match_status": "MISSING_TARGET",
+      "match_score": 0,
+      "differences": [
+        {
+          "field": "entire_rule",
+          "source_value": "App-ID based P2P blocking",
+          "target_value": "No equivalent in GCP",
+          "impact": "GCP firewall cannot block by application signature"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Implement egress proxy with application filtering for P2P blocking."
+    },
+    {
+      "comparison_id": "CMP-0089",
+      "comparison_type": "BACKUP_VALIDATION",
+      "source_platform": "AWS",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_id": "sgr-009",
+        "security_group": "sg-webapp-prod",
+        "type": "Outbound",
+        "port_range": "5432",
+        "source_type": "Live AWS"
+      },
+      "target_rule": {
+        "rule_id": "sgr-009-backup",
+        "security_group": "sg-webapp-prod",
+        "type": "Outbound",
+        "port_range": "5432",
+        "source_type": "S3 Config Backup"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Backup current. Database access rule intact."
+    },
+    {
+      "comparison_id": "CMP-0090",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "ISO 27017 Template",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_id": "CLD.12.1.2",
+        "requirement": "Network controls in cloud computing",
+        "expected_config": "Cloud-native network security controls"
+      },
+      "target_rule": {
+        "nsgs_deployed": 25,
+        "azure_firewall": "enabled",
+        "ddos_protection": "Standard",
+        "private_endpoints": 15,
+        "service_endpoints": 8
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Azure implements comprehensive cloud network controls. Compliant with ISO 27017 CLD.12.1.2."
+    },
+    {
+      "comparison_id": "CMP-0091",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "GCP",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "allow-spanner-from-app",
+        "direction": "EGRESS",
+        "source_tags": "app-server",
+        "protocols": "tcp:443"
+      },
+      "target_rule": {
+        "rule_name": "Allow-CosmosDB-Inbound",
+        "priority": 100,
+        "destination": "10.45.0.0/24",
+        "port": "443"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 75,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Cloud Spanner",
+          "target_value": "CosmosDB",
+          "impact": "Different globally distributed databases"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Both provide globally distributed database access via HTTPS."
+    },
+    {
+      "comparison_id": "CMP-0092",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "Palo Alto",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_name": "Allow-DB-Replication-DR",
+        "source_zone": "Database",
+        "dest_zone": "Untrust",
+        "source_type": "Panorama Config"
+      },
+      "target_rule": {
+        "rule_name": "Allow-DB-Replication-DR",
+        "source_zone": "Database",
+        "dest_zone": "Untrust",
+        "source_type": "Firewall Running Config"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "DR replication rule synchronized between Panorama and firewall."
+    },
+    {
+      "comparison_id": "CMP-0093",
+      "comparison_type": "MIGRATION",
+      "source_platform": "On-Premises Sophos XG",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "rule-35",
+        "name": "Allow-SMTP-Outbound",
+        "services": "SMTP,SMTPS",
+        "action": "Accept",
+        "scanning": "enabled"
+      },
+      "target_rule": {
+        "rule_name": "allow-smtp-egress",
+        "source_tags": "mail-server",
+        "protocols": "tcp:25,tcp:465,tcp:587"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 80,
+      "differences": [
+        {
+          "field": "content_scanning",
+          "source_value": "Email scanning enabled",
+          "target_value": "None (port-based only)",
+          "impact": "GCP cannot scan email content"
+        }
+      ],
+      "risk_level": "MEDIUM",
+      "recommendation": "Implement email security gateway for content scanning."
+    },
+    {
+      "comparison_id": "CMP-0094",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "AWS",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_id": "sgr-118",
+        "security_group": "sg-codebuild",
+        "type": "Outbound",
+        "port_range": "443",
+        "source": "0.0.0.0/0"
+      },
+      "target_rule": {
+        "rule_name": "allow-cloudbuild-egress",
+        "source_tags": "cloudbuild-worker",
+        "protocols": "tcp:443"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "CI/CD build service egress rules are equivalent across platforms."
+    },
+    {
+      "comparison_id": "CMP-0095",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "NERC CIP Template",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "CIP-005-6",
+        "requirement": "Electronic Security Perimeter",
+        "expected_config": "All access points identified and protected"
+      },
+      "target_rule": {
+        "zones_defined": 8,
+        "esp_boundary": "Untrust zone interface",
+        "all_traffic_logged": true,
+        "default_deny": true
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "Firewall implements defined ESP with comprehensive logging. Compliant with NERC CIP-005-6."
+    },
+    {
+      "comparison_id": "CMP-0096",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Azure",
+      "target_platform": "AWS",
+      "source_rule": {
+        "rule_name": "Allow-Arc-Servers",
+        "priority": 630,
+        "direction": "Outbound",
+        "destination": "AzureArcInfrastructure",
+        "port": "443"
+      },
+      "target_rule": {
+        "rule_id": "sgr-ssm-001",
+        "security_group": "sg-hybrid-servers",
+        "type": "Outbound",
+        "port_range": "443",
+        "source": "0.0.0.0/0"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 80,
+      "differences": [
+        {
+          "field": "service",
+          "source_value": "Azure Arc (hybrid management)",
+          "target_value": "AWS Systems Manager (hybrid management)",
+          "impact": "Different hybrid cloud management platforms"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Both enable hybrid server management."
+    },
+    {
+      "comparison_id": "CMP-0097",
+      "comparison_type": "DRIFT_DETECTION",
+      "source_platform": "GCP",
+      "target_platform": "GCP",
+      "source_rule": {
+        "rule_name": "shared-allow-vault",
+        "network": "vpc-shared-services",
+        "source_ranges": "10.0.0.0/8",
+        "protocols": "tcp:8200",
+        "source_type": "Terraform State"
+      },
+      "target_rule": {
+        "rule_name": "shared-allow-vault",
+        "network": "vpc-shared-services",
+        "source_ranges": "10.0.0.0/8",
+        "protocols": "tcp:8200",
+        "source_type": "Live GCP"
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "No drift detected. Vault access rule synchronized."
+    },
+    {
+      "comparison_id": "CMP-0098",
+      "comparison_type": "MIGRATION",
+      "source_platform": "AWS",
+      "target_platform": "Palo Alto",
+      "source_rule": {
+        "rule_id": "sgr-079",
+        "security_group": "sg-jenkins",
+        "type": "Outbound",
+        "port_range": "443",
+        "source": "0.0.0.0/0"
+      },
+      "target_rule": {
+        "rule_name": "Allow-Jenkins-to-GitHub",
+        "source_zone": "Application",
+        "dest_zone": "Untrust",
+        "dest_address": "AG-GitHub-IPs",
+        "application": "github-base,ssl",
+        "service": "tcp/443,tcp/22",
+        "security_profile": "Egress-Protection"
+      },
+      "match_status": "PARTIAL_MATCH",
+      "match_score": 75,
+      "differences": [
+        {
+          "field": "destination",
+          "source_value": "0.0.0.0/0 (any)",
+          "target_value": "AG-GitHub-IPs (specific)",
+          "impact": "Palo Alto restricts to GitHub IPs only"
+        }
+      ],
+      "risk_level": "LOW",
+      "recommendation": "Palo Alto rule is more restrictive."
+    },
+    {
+      "comparison_id": "CMP-0099",
+      "comparison_type": "CROSS_PLATFORM",
+      "source_platform": "Palo Alto",
+      "target_platform": "Azure",
+      "source_rule": {
+        "rule_name": "Allow-NetFlow-Export",
+        "source_zone": "any",
+        "dest_zone": "Trust",
+        "source_address": "AG-Network-Devices",
+        "dest_address": "AG-NetFlow-Collectors",
+        "application": "netflow",
+        "service": "udp/2055,udp/9995,udp/9996"
+      },
+      "target_rule": {
+        "rule_name": "Allow-NSG-Flow-Logs",
+        "type": "Azure Monitor Configuration",
+        "destination": "Log Analytics Workspace",
+        "protocol": "N/A - Azure native"
+      },
+      "match_status": "MISMATCH",
+      "match_score": 40,
+      "differences": [
+        {
+          "field": "collection_method",
+          "source_value": "NetFlow/IPFIX to collectors",
+          "target_value": "Azure-native NSG flow logs",
+          "impact": "Different network flow collection architectures"
+        }
+      ],
+      "risk_level": "NONE",
+      "recommendation": "Azure uses native NSG flow logs instead of NetFlow."
+    },
+    {
+      "comparison_id": "CMP-0100",
+      "comparison_type": "COMPLIANCE_AUDIT",
+      "source_platform": "Zero Trust Template",
+      "target_platform": "Multi-Platform",
+      "source_rule": {
+        "rule_id": "ZT-Network",
+        "requirement": "Never trust, always verify - microsegmentation",
+        "expected_config": "Least privilege network access"
+      },
+      "target_rule": {
+        "aws_security_groups": 120,
+        "azure_nsg_rules": 115,
+        "gcp_firewall_rules": 110,
+        "palo_alto_rules": 115,
+        "default_deny_all_platforms": true,
+        "explicit_allow_only": true,
+        "microsegmentation_implemented": true
+      },
+      "match_status": "EXACT_MATCH",
+      "match_score": 100,
+      "differences": [],
+      "risk_level": "NONE",
+      "recommendation": "All platforms implement Zero Trust network principles with default deny and explicit allow rules."
+    }
+  ],
+  "summary": {
+    "total_comparisons": 100,
+    "by_type": {
+      "CROSS_PLATFORM": 35,
+      "MIGRATION": 18,
+      "DRIFT_DETECTION": 17,
+      "COMPLIANCE_AUDIT": 18,
+      "BACKUP_VALIDATION": 12
+    },
+    "by_match_status": {
+      "EXACT_MATCH": 38,
+      "PARTIAL_MATCH": 32,
+      "MISMATCH": 18,
+      "MISSING_TARGET": 10,
+      "MISSING_SOURCE": 2
+    },
+    "by_risk_level": {
+      "CRITICAL": 4,
+      "HIGH": 6,
+      "MEDIUM": 18,
+      "LOW": 28,
+      "NONE": 44
+    },
+    "platforms_compared": [
+      "AWS",
+      "Azure",
+      "GCP",
+      "Palo Alto",
+      "On-Premises (Cisco ASA, Juniper SRX, Checkpoint, Fortinet, F5, SonicWall, Sophos, Barracuda, Cisco Firepower)"
+    ],
+    "compliance_frameworks": [
+      "PCI-DSS",
+      "CIS Benchmark",
+      "SOC2",
+      "HIPAA",
+      "NIST 800-53",
+      "ISO 27001",
+      "GDPR",
+      "FedRAMP",
+      "SOX",
+      "HITRUST",
+      "CMMC",
+      "NIST CSF",
+      "ISO 27017",
+      "NERC CIP",
+      "Zero Trust"
+    ]
+  }
+}

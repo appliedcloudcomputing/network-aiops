@@ -1,0 +1,1429 @@
+{
+  "metadata": {
+    "dataset": "Route Validation & Path Analysis - Path Analyzer Results",
+    "set": "8A",
+    "total_path_analyses": 45,
+    "description": "Path discovery results showing hop-by-hop network path analysis across multi-cloud environments",
+    "component_types": ["Security Group", "Network ACL", "Route Table", "Transit Gateway", "NAT Gateway", "Internet Gateway", "Load Balancer", "Firewall", "VPC Peering", "VPN Gateway", "Private Endpoint", "Service Endpoint", "Destination"],
+    "decision_types": ["ALLOW", "DENY", "ROUTE", "NAT", "FORWARD", "REACHED", "BLOCKED", "DROPPED"]
+  },
+  "path_analyses": [
+    {
+      "analysis_id": "PATH-0001",
+      "analysis_timestamp": "2026-01-13T10:30:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "webapp-prod-1",
+        "source_ip": "10.30.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "postgres-primary",
+        "destination_ip": "10.40.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 0.8,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-002 allows TCP/5432 to sg-database-prod", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all traffic to 10.0.0.0/8", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.40.0.0/16 via local VPC routing", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "acl-prod-database", "component_id": "acl-0a1b2c3d4e5f00003", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "Rule 100 allows TCP/5432 from 10.30.0.0/16", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "sg-database-prod", "component_id": "sg-0a1b2c3d4e5f00002", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-101 allows TCP/5432 from sg-webapp-prod", "latency_ms": 0.1},
+        {"hop_number": 6, "component": "postgres-primary", "component_id": "i-0db123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Destination reached - PostgreSQL listening on port 5432", "latency_ms": 0.2}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0002",
+      "analysis_timestamp": "2026-01-13T10:31:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "Internet",
+        "source_ip": "0.0.0.0/0",
+        "source_type": "External",
+        "source_vpc": null,
+        "destination": "webapp-prod-1",
+        "destination_ip": "10.30.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 8,
+        "path_latency_ms": 15.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "cloudflare-edge", "component_id": "cf-edge-iad-01", "type": "CDN", "direction": "Inbound", "decision": "FORWARD", "details": "Cloudflare edge node - WAF rules passed", "latency_ms": 5.0},
+        {"hop_number": 2, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters VPC via Internet Gateway", "latency_ms": 2.0},
+        {"hop_number": 3, "component": "acl-prod-public", "component_id": "acl-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "Rule 100 allows TCP/443 from 0.0.0.0/0", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "sg-alb-public", "component_id": "sg-0a1b2c3d4e5f00005", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule allows HTTPS from Cloudflare IPs", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "prod-alb", "component_id": "arn:aws:elasticloadbalancing:...", "type": "Load Balancer", "direction": "Forward", "decision": "FORWARD", "details": "ALB routes to target group tg-webapp-prod", "latency_ms": 3.0},
+        {"hop_number": 6, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 7, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule allows TCP/8080 from sg-alb-public", "latency_ms": 0.1},
+        {"hop_number": 8, "component": "webapp-prod-1", "component_id": "i-0abc123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Destination reached - Application listening on port 8080", "latency_ms": 5.1}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0003",
+      "analysis_timestamp": "2026-01-13T10:32:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "Internet",
+        "source_ip": "198.51.100.50",
+        "source_type": "External",
+        "source_vpc": null,
+        "destination": "postgres-primary",
+        "destination_ip": "10.40.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 3,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "acl-prod-database",
+        "blocking_reason": "No route from internet to private database subnet"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters VPC", "latency_ms": null},
+        {"hop_number": 2, "component": "rtb-public", "component_id": "rtb-0a1b2c3d4e5f00010", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "No direct route to 10.40.0.0/16 from public subnet", "latency_ms": null},
+        {"hop_number": 3, "component": "acl-prod-database", "component_id": "acl-0a1b2c3d4e5f00003", "type": "Network ACL", "direction": "Inbound", "decision": "BLOCKED", "details": "Rule 200 denies all traffic from 0.0.0.0/0 - Database isolated from internet", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0004",
+      "analysis_timestamp": "2026-01-13T10:33:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "api-prod-1",
+        "source_ip": "10.31.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "api.stripe.com",
+        "destination_ip": "52.4.128.0",
+        "destination_type": "External",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 7,
+        "path_latency_ms": 25.3,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-api-gateway", "component_id": "sg-0a1b2c3d4e5f00006", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule allows HTTPS to 0.0.0.0/0", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 110 allows TCP/443 outbound", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 0.0.0.0/0 via nat-0a1b2c3d4e5f00001", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "nat-prod-1a", "component_id": "nat-0a1b2c3d4e5f00001", "type": "NAT Gateway", "direction": "Forward", "decision": "NAT", "details": "SNAT to elastic IP 54.123.45.67", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "acl-prod-public", "component_id": "acl-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all outbound", "latency_ms": 0.1},
+        {"hop_number": 6, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Outbound", "decision": "ROUTE", "details": "Traffic exits to internet", "latency_ms": 2.0},
+        {"hop_number": 7, "component": "api.stripe.com", "component_id": "52.4.128.0", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "External destination reached via internet", "latency_ms": 21.8}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0005",
+      "analysis_timestamp": "2026-01-13T10:34:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "webapp-prod-1",
+        "source_ip": "10.30.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "dr-postgres-primary",
+        "destination_ip": "10.120.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-dr-east-1",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 9,
+        "path_latency_ms": 12.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule allows TCP/5432 to 10.120.0.0/16", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.120.0.0/16 via tgw-0a1b2c3d4e5f00001", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "tgw-attach-vpc-prod", "component_id": "tgw-attach-vpc-prod", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Traffic enters Transit Gateway from Production VPC", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "tgw-rtb-prod", "component_id": "tgw-rtb-prod", "type": "Transit Gateway Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.120.0.0/16 to tgw-attach-vpc-dr", "latency_ms": 0.5},
+        {"hop_number": 6, "component": "tgw-attach-vpc-dr", "component_id": "tgw-attach-vpc-dr", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Traffic exits to DR VPC", "latency_ms": 1.0},
+        {"hop_number": 7, "component": "acl-dr-database", "component_id": "acl-dr-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "Rule 100 allows TCP/5432 from 10.0.0.0/8", "latency_ms": 0.1},
+        {"hop_number": 8, "component": "sg-dr-database", "component_id": "sg-dr-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule allows replication from production", "latency_ms": 0.1},
+        {"hop_number": 9, "component": "dr-postgres-primary", "component_id": "i-dr-0db123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "DR database reached for replication", "latency_ms": 9.4}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0006",
+      "analysis_timestamp": "2026-01-13T10:35:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "vpn-user-laptop",
+        "source_ip": "10.100.50.25",
+        "source_type": "VPN Client",
+        "source_vpc": null,
+        "destination": "grafana-1",
+        "destination_ip": "10.50.1.11",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 3000
+      },
+      "summary": {
+        "total_hops": 8,
+        "path_latency_ms": 35.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "vpn-endpoint", "component_id": "vpn-0abc123def456789", "type": "VPN Gateway", "direction": "Inbound", "decision": "ALLOW", "details": "VPN authenticated user - MFA verified", "latency_ms": 15.0},
+        {"hop_number": 2, "component": "tgw-attach-vpn-dc", "component_id": "tgw-attach-vpn-dc", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "VPN traffic enters via Transit Gateway", "latency_ms": 2.0},
+        {"hop_number": 3, "component": "tgw-rtb-prod", "component_id": "tgw-rtb-prod", "type": "Transit Gateway Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.50.0.0/24 to tgw-attach-vpc-prod", "latency_ms": 0.5},
+        {"hop_number": 4, "component": "tgw-attach-vpc-prod", "component_id": "tgw-attach-vpc-prod", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Traffic exits to Production VPC", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "rtb-tgw-subnet", "component_id": "rtb-0a1b2c3d4e5f00005", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.50.0.0/24 via local", "latency_ms": 0.2},
+        {"hop_number": 6, "component": "acl-monitoring", "component_id": "acl-0a1b2c3d4e5f00006", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "Rule 100 allows TCP/3000 from 10.100.0.0/16", "latency_ms": 0.1},
+        {"hop_number": 7, "component": "sg-monitoring", "component_id": "sg-0a1b2c3d4e5f00008", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule allows Grafana from VPN", "latency_ms": 0.1},
+        {"hop_number": 8, "component": "grafana-1", "component_id": "i-0mon123def456789b", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Grafana dashboard accessible", "latency_ms": 16.3}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0007",
+      "analysis_timestamp": "2026-01-13T10:36:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "dev-server-1",
+        "source_ip": "10.100.5.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-dev-east-1",
+        "destination": "postgres-primary",
+        "destination_ip": "10.40.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "tgw-rtb-dev",
+        "blocking_reason": "Blackhole route prevents dev-to-prod database access"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-dev-server", "component_id": "sg-dev-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound allows all traffic", "latency_ms": null},
+        {"hop_number": 2, "component": "rtb-dev-private", "component_id": "rtb-dev-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.0.0.0/8 via Transit Gateway", "latency_ms": null},
+        {"hop_number": 3, "component": "tgw-attach-vpc-dev", "component_id": "tgw-attach-vpc-dev", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Traffic enters Transit Gateway", "latency_ms": null},
+        {"hop_number": 4, "component": "tgw-rtb-dev", "component_id": "tgw-rtb-dev", "type": "Transit Gateway Route Table", "direction": "Forward", "decision": "BLOCKED", "details": "Blackhole route for 10.0.0.0/8 - Dev isolated from production", "latency_ms": null},
+        {"hop_number": 5, "component": "N/A", "component_id": null, "type": "Blackhole", "direction": "N/A", "decision": "DROPPED", "details": "Traffic dropped by blackhole route - Environment isolation enforced", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0008",
+      "analysis_timestamp": "2026-01-13T10:37:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "eks-node-1",
+        "source_ip": "10.60.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "ECR",
+        "destination_ip": "vpce-ecr",
+        "destination_type": "VPC Endpoint",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 2.1,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-eks-nodes", "component_id": "sg-0a1b2c3d4e5f00009", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule allows HTTPS to VPC endpoints", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-eks-nodes", "component_id": "acl-0a1b2c3d4e5f00007", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-eks-private", "component_id": "rtb-0a1b2c3d4e5f00003", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to ECR endpoint via pl-ecr prefix list", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "vpce-ecr-api", "component_id": "vpce-0a1b2c3d4e5f00001", "type": "VPC Endpoint", "direction": "Forward", "decision": "FORWARD", "details": "PrivateLink endpoint for ECR API", "latency_ms": 1.5},
+        {"hop_number": 5, "component": "ECR", "component_id": "ecr.us-east-1.amazonaws.com", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "ECR service reached via PrivateLink", "latency_ms": 0.2}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0009",
+      "analysis_timestamp": "2026-01-13T10:38:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "webapp-prod-1",
+        "source_ip": "10.30.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "redis-prod-cluster",
+        "destination_ip": "10.35.1.10",
+        "destination_type": "ElastiCache",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 6379
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 0.6,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-003 allows TCP/6379 to sg-redis-prod", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.35.0.0/24 via local", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "sg-redis-prod", "component_id": "sg-0a1b2c3d4e5f00003", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-201 allows TCP/6379 from sg-webapp-prod", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "redis-prod-cluster", "component_id": "elasticache-001", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Redis cluster endpoint reached", "latency_ms": 0.2}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0010",
+      "analysis_timestamp": "2026-01-13T10:39:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "on-prem-dc-server",
+        "source_ip": "172.16.10.50",
+        "source_type": "On-Premises",
+        "source_vpc": null,
+        "destination": "shared-services-dns",
+        "destination_ip": "10.200.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-shared-east-1",
+        "protocol": "UDP",
+        "port": 53
+      },
+      "summary": {
+        "total_hops": 7,
+        "path_latency_ms": 18.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "dc-router", "component_id": "router-dc-01", "type": "On-Premises Router", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.0.0.0/8 via VPN tunnel", "latency_ms": 1.0},
+        {"hop_number": 2, "component": "vpn-tunnel-1", "component_id": "vpn-tun-0abc123", "type": "VPN Tunnel", "direction": "Forward", "decision": "FORWARD", "details": "IPSec tunnel to AWS - encrypted", "latency_ms": 8.0},
+        {"hop_number": 3, "component": "vgw-prod", "component_id": "vgw-0a1b2c3d4e5f00001", "type": "Virtual Private Gateway", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters AWS via VPN Gateway", "latency_ms": 1.0},
+        {"hop_number": 4, "component": "tgw-rtb-prod", "component_id": "tgw-rtb-prod", "type": "Transit Gateway Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.200.0.0/16 to tgw-attach-vpc-shared", "latency_ms": 0.5},
+        {"hop_number": 5, "component": "tgw-attach-vpc-shared", "component_id": "tgw-attach-vpc-shared", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Traffic exits to Shared Services VPC", "latency_ms": 1.0},
+        {"hop_number": 6, "component": "sg-shared-dns", "component_id": "sg-shared-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound allows UDP/53 from 172.16.0.0/12", "latency_ms": 0.1},
+        {"hop_number": 7, "component": "shared-services-dns", "component_id": "i-shared-dns-001", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "DNS server reached", "latency_ms": 6.9}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0011",
+      "analysis_timestamp": "2026-01-13T10:40:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "vm-webapp-prod-1",
+        "source_ip": "10.30.1.20",
+        "source_type": "Azure VM",
+        "source_vpc": "vnet-prod-eastus",
+        "destination": "postgres-flex-server",
+        "destination_ip": "10.40.1.20",
+        "destination_type": "Azure PostgreSQL",
+        "destination_vpc": "vnet-prod-eastus",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 6,
+        "path_latency_ms": 1.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "nsg-webapp-prod", "component_id": "/subscriptions/.../nsg-webapp-prod", "type": "Network Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Rule Allow-SQL-to-Database (priority 110) allows TCP/5432", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "udr-webapp-subnet", "component_id": "/subscriptions/.../udr-webapp", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.40.0.0/24 via VNet local routing", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "snet-webapp-prod", "component_id": "/subscriptions/.../snet-webapp-prod", "type": "Subnet", "direction": "Forward", "decision": "ROUTE", "details": "Subnet routing to database subnet", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "snet-database-prod", "component_id": "/subscriptions/.../snet-database-prod", "type": "Subnet", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters database subnet", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "nsg-database-prod", "component_id": "/subscriptions/.../nsg-database-prod", "type": "Network Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Rule Allow-WebApp-to-SQL (priority 100) with ASG reference", "latency_ms": 0.1},
+        {"hop_number": 6, "component": "postgres-flex-server", "component_id": "/subscriptions/.../postgres-flex", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Azure PostgreSQL Flexible Server reached via private endpoint", "latency_ms": 0.6}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0012",
+      "analysis_timestamp": "2026-01-13T10:41:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "vm-webapp-prod-1",
+        "source_ip": "10.30.1.20",
+        "source_type": "Azure VM",
+        "source_vpc": "vnet-prod-eastus",
+        "destination": "storage-account-prod",
+        "destination_ip": "Storage Service Tag",
+        "destination_type": "Azure Storage",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 2.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "nsg-webapp-prod", "component_id": "/subscriptions/.../nsg-webapp-prod", "type": "Network Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Rule Allow-Storage-Outbound (priority 130) allows to Storage service tag", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "udr-webapp-subnet", "component_id": "/subscriptions/.../udr-webapp", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to Microsoft.Storage service endpoint", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "snet-webapp-prod-service-endpoint", "component_id": "Microsoft.Storage", "type": "Service Endpoint", "direction": "Forward", "decision": "FORWARD", "details": "Service endpoint for Azure Storage - traffic stays on Azure backbone", "latency_ms": 0.5},
+        {"hop_number": 4, "component": "storage-firewall", "component_id": "storage-acl-prod", "type": "Storage Firewall", "direction": "Inbound", "decision": "ALLOW", "details": "Storage firewall allows access from snet-webapp-prod", "latency_ms": 0.2},
+        {"hop_number": 5, "component": "storage-account-prod", "component_id": "/subscriptions/.../storageAccounts/prodsa001", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Azure Storage account reached via service endpoint", "latency_ms": 1.5}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0013",
+      "analysis_timestamp": "2026-01-13T10:42:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "aks-pod-webapp",
+        "source_ip": "10.60.5.25",
+        "source_type": "AKS Pod",
+        "source_vpc": "vnet-prod-eastus",
+        "destination": "key-vault-prod",
+        "destination_ip": "10.50.1.5",
+        "destination_type": "Azure Key Vault",
+        "destination_vpc": "vnet-prod-eastus",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 6,
+        "path_latency_ms": 3.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "aks-network-policy", "component_id": "netpol-webapp-egress", "type": "Network Policy", "direction": "Outbound", "decision": "ALLOW", "details": "Kubernetes NetworkPolicy allows egress to Key Vault CIDR", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "nsg-aks-nodes", "component_id": "/subscriptions/.../nsg-aks-nodes", "type": "Network Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound to AzureKeyVault service tag allowed", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "udr-aks-subnet", "component_id": "/subscriptions/.../udr-aks", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to Key Vault private endpoint", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "pep-keyvault-prod", "component_id": "/subscriptions/.../privateEndpoints/pep-kv", "type": "Private Endpoint", "direction": "Forward", "decision": "FORWARD", "details": "Traffic routed via Private Endpoint", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "kv-firewall", "component_id": "key-vault-firewall", "type": "Key Vault Firewall", "direction": "Inbound", "decision": "ALLOW", "details": "Key Vault allows access from private endpoint", "latency_ms": 0.3},
+        {"hop_number": 6, "component": "key-vault-prod", "component_id": "/subscriptions/.../vaults/kv-prod", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Key Vault reached via private endpoint", "latency_ms": 1.5}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0014",
+      "analysis_timestamp": "2026-01-13T10:43:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "vm-dev-server",
+        "source_ip": "10.100.5.20",
+        "source_type": "Azure VM",
+        "source_vpc": "vnet-dev-eastus",
+        "destination": "vm-webapp-prod-1",
+        "destination_ip": "10.30.1.20",
+        "destination_type": "Azure VM",
+        "destination_vpc": "vnet-prod-eastus",
+        "protocol": "TCP",
+        "port": 22
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "azfw-prod-hub",
+        "blocking_reason": "Azure Firewall blocks dev-to-prod SSH access"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "nsg-dev-server", "component_id": "/subscriptions/.../nsg-dev", "type": "Network Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Default outbound allow", "latency_ms": null},
+        {"hop_number": 2, "component": "udr-dev-subnet", "component_id": "/subscriptions/.../udr-dev", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.0.0.0/8 via Azure Firewall", "latency_ms": null},
+        {"hop_number": 3, "component": "azfw-prod-hub", "component_id": "/subscriptions/.../azfw-prod-hub", "type": "Azure Firewall", "direction": "Forward", "decision": "BLOCKED", "details": "Network rule collection rc-deny-dev-prod blocks dev-to-prod access", "latency_ms": null},
+        {"hop_number": 4, "component": "N/A", "component_id": null, "type": "Firewall Block", "direction": "N/A", "decision": "DROPPED", "details": "Traffic dropped by Azure Firewall - Environment isolation", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0015",
+      "analysis_timestamp": "2026-01-13T10:44:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "gce-webapp-1",
+        "source_ip": "10.30.1.30",
+        "source_type": "GCE Instance",
+        "source_vpc": "vpc-production",
+        "destination": "cloudsql-postgres",
+        "destination_ip": "10.40.1.30",
+        "destination_type": "Cloud SQL",
+        "destination_vpc": "vpc-production",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 1.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "allow-db-from-app-postgres", "component_id": "projects/.../firewalls/allow-db-from-app-postgres", "type": "GCP Firewall Rule", "direction": "Egress", "decision": "ALLOW", "details": "Egress allowed - no explicit deny rule", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "vpc-production-routing", "component_id": "projects/.../routes/default-route", "type": "VPC Route", "direction": "Forward", "decision": "ROUTE", "details": "Route to Cloud SQL private IP via VPC peering", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "servicenetworking-peering", "component_id": "servicenetworking-googleapis-com", "type": "VPC Peering", "direction": "Forward", "decision": "FORWARD", "details": "Traffic enters Google-managed VPC for Cloud SQL", "latency_ms": 0.5},
+        {"hop_number": 4, "component": "allow-db-from-app-postgres", "component_id": "projects/.../firewalls/allow-db-from-app-postgres", "type": "GCP Firewall Rule", "direction": "Ingress", "decision": "ALLOW", "details": "Source tag app-server matches, TCP/5432 allowed", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "cloudsql-postgres", "component_id": "projects/.../instances/cloudsql-prod", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Cloud SQL instance reached via private IP", "latency_ms": 0.6}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0016",
+      "analysis_timestamp": "2026-01-13T10:45:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "gke-node-1",
+        "source_ip": "10.60.1.30",
+        "source_type": "GKE Node",
+        "source_vpc": "vpc-production",
+        "destination": "gcr.io",
+        "destination_ip": "199.36.153.4",
+        "destination_type": "Google Container Registry",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 5.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "allow-gke-egress", "component_id": "projects/.../firewalls/allow-gke-egress", "type": "GCP Firewall Rule", "direction": "Egress", "decision": "ALLOW", "details": "Egress to Google APIs allowed", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "vpc-production-routing", "component_id": "projects/.../routes/default-internet-gateway", "type": "VPC Route", "direction": "Forward", "decision": "ROUTE", "details": "Route to private.googleapis.com via Private Google Access", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "private-google-access", "component_id": "private.googleapis.com", "type": "Private Google Access", "direction": "Forward", "decision": "FORWARD", "details": "Traffic routed to Google APIs without public IP", "latency_ms": 2.0},
+        {"hop_number": 4, "component": "cloud-nat", "component_id": "projects/.../routers/cloud-nat-prod", "type": "Cloud NAT", "direction": "Forward", "decision": "NAT", "details": "Cloud NAT not needed - using Private Google Access", "latency_ms": 0.0},
+        {"hop_number": 5, "component": "gcr.io", "component_id": "gcr.io", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Google Container Registry reached via Private Google Access", "latency_ms": 2.9}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0017",
+      "analysis_timestamp": "2026-01-13T10:46:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "gce-webapp-1",
+        "source_ip": "10.30.1.30",
+        "source_type": "GCE Instance",
+        "source_vpc": "vpc-production",
+        "destination": "memorystore-redis",
+        "destination_ip": "10.35.1.30",
+        "destination_type": "Memorystore",
+        "destination_vpc": "vpc-production",
+        "protocol": "TCP",
+        "port": 6379
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": 0.8,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "allow-redis-from-app", "component_id": "projects/.../firewalls/allow-redis-from-app", "type": "GCP Firewall Rule", "direction": "Egress", "decision": "ALLOW", "details": "Egress allowed - implicit allow", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "vpc-production-routing", "component_id": "projects/.../routes/peering-memorystore", "type": "VPC Route", "direction": "Forward", "decision": "ROUTE", "details": "Route to Memorystore via VPC peering", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "allow-redis-from-app", "component_id": "projects/.../firewalls/allow-redis-from-app", "type": "GCP Firewall Rule", "direction": "Ingress", "decision": "ALLOW", "details": "Source tags app-server,web-server match, TCP/6379 allowed", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "memorystore-redis", "component_id": "projects/.../instances/redis-prod", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Memorystore Redis instance reached", "latency_ms": 0.4}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0018",
+      "analysis_timestamp": "2026-01-13T10:47:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "Internet",
+        "source_ip": "198.51.100.100",
+        "source_type": "External",
+        "source_vpc": null,
+        "destination": "gce-webapp-1",
+        "destination_ip": "10.30.1.30",
+        "destination_type": "GCE Instance",
+        "destination_vpc": "vpc-production",
+        "protocol": "TCP",
+        "port": 22
+      },
+      "summary": {
+        "total_hops": 2,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "deny-ssh-public",
+        "blocking_reason": "SSH from internet blocked - use IAP instead"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "cloud-armor", "component_id": "projects/.../securityPolicies/web-protection", "type": "Cloud Armor", "direction": "Inbound", "decision": "ALLOW", "details": "Cloud Armor not blocking this IP", "latency_ms": null},
+        {"hop_number": 2, "component": "deny-ssh-public", "component_id": "projects/.../firewalls/deny-ssh-public", "type": "GCP Firewall Rule", "direction": "Ingress", "decision": "BLOCKED", "details": "Priority 2000 deny rule blocks TCP/22 from 0.0.0.0/0", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0019",
+      "analysis_timestamp": "2026-01-13T10:48:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "Untrust-Zone",
+        "source_ip": "203.0.113.50",
+        "source_type": "External",
+        "source_vpc": null,
+        "destination": "webapp-prod-1-pa",
+        "destination_ip": "10.30.1.40",
+        "destination_type": "Server",
+        "destination_vpc": "DMZ",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 6,
+        "path_latency_ms": 8.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "pa-external-interface", "component_id": "ethernet1/1", "type": "Palo Alto Interface", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters Untrust zone", "latency_ms": 0.5},
+        {"hop_number": 2, "component": "Block-Malicious-IPs-Inbound", "component_id": "rule-50", "type": "Palo Alto Security Rule", "direction": "Forward", "decision": "ALLOW", "details": "Source IP not in EDL-Malicious-IPs", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "Allow-API-Gateway-Inbound", "component_id": "rule-1", "type": "Palo Alto Security Rule", "direction": "Forward", "decision": "ALLOW", "details": "Rule matches: Untrust->DMZ, ssl app, AG-Web-Servers dest", "latency_ms": 0.3},
+        {"hop_number": 4, "component": "Web-Protection-Profile", "component_id": "profile-group-web", "type": "Security Profile", "direction": "Forward", "decision": "ALLOW", "details": "AV: Clean, AS: Clean, VP: No vulnerabilities, URL: Allowed", "latency_ms": 2.0},
+        {"hop_number": 5, "component": "pa-dmz-interface", "component_id": "ethernet1/3", "type": "Palo Alto Interface", "direction": "Outbound", "decision": "ROUTE", "details": "Traffic exits to DMZ zone", "latency_ms": 0.5},
+        {"hop_number": 6, "component": "webapp-prod-1-pa", "component_id": "10.30.1.40", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Web server in DMZ reached", "latency_ms": 5.0}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0020",
+      "analysis_timestamp": "2026-01-13T10:49:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "app-server-1-pa",
+        "source_ip": "10.31.1.40",
+        "source_type": "Server",
+        "source_vpc": "Application",
+        "destination": "db-server-1-pa",
+        "destination_ip": "10.40.1.40",
+        "destination_type": "Server",
+        "destination_vpc": "Database",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 1.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "pa-app-interface", "component_id": "ethernet1/8", "type": "Palo Alto Interface", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters from Application zone", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "Allow-App-to-DB-Postgres", "component_id": "rule-3", "type": "Palo Alto Security Rule", "direction": "Forward", "decision": "ALLOW", "details": "Rule matches: Application->Database, postgres app, AG-Database-Servers dest", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "Database-Protection-Profile", "component_id": "profile-group-db", "type": "Security Profile", "direction": "Forward", "decision": "ALLOW", "details": "AV: Clean, AS: Clean, VP: No SQL injection detected", "latency_ms": 0.3},
+        {"hop_number": 4, "component": "pa-db-interface", "component_id": "ethernet1/10", "type": "Palo Alto Interface", "direction": "Outbound", "decision": "ROUTE", "details": "Traffic exits to Database zone", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "db-server-1-pa", "component_id": "10.40.1.40", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "PostgreSQL server reached", "latency_ms": 0.5}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0021",
+      "analysis_timestamp": "2026-01-13T10:50:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "Untrust-Zone",
+        "source_ip": "185.220.101.50",
+        "source_type": "Tor Exit Node",
+        "source_vpc": null,
+        "destination": "webapp-prod-1-pa",
+        "destination_ip": "10.30.1.40",
+        "destination_type": "Server",
+        "destination_vpc": "DMZ",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 2,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "Block-Tor-Exit-Nodes",
+        "blocking_reason": "Source IP in Tor Exit Node EDL - blocked by security policy"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "pa-external-interface", "component_id": "ethernet1/1", "type": "Palo Alto Interface", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters Untrust zone", "latency_ms": null},
+        {"hop_number": 2, "component": "Block-Tor-Exit-Nodes", "component_id": "rule-51", "type": "Palo Alto Security Rule", "direction": "Forward", "decision": "BLOCKED", "details": "Source 185.220.101.50 matches EDL-Tor-Exit-Nodes - DENY action", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0022",
+      "analysis_timestamp": "2026-01-13T10:51:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "vpn-user-pa",
+        "source_ip": "10.100.50.60",
+        "source_type": "VPN User",
+        "source_vpc": "VPN",
+        "destination": "grafana-pa",
+        "destination_ip": "10.50.1.40",
+        "destination_type": "Server",
+        "destination_vpc": "Trust",
+        "protocol": "TCP",
+        "port": 3000
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 2.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "globalprotect-gateway", "component_id": "gp-gateway-1", "type": "GlobalProtect Gateway", "direction": "Inbound", "decision": "ALLOW", "details": "VPN user authenticated - MFA verified", "latency_ms": 0.5},
+        {"hop_number": 2, "component": "pa-vpn-interface", "component_id": "tunnel.1", "type": "Palo Alto Tunnel Interface", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters VPN zone", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "Allow-Grafana-VPN", "component_id": "rule-10", "type": "Palo Alto Security Rule", "direction": "Forward", "decision": "ALLOW", "details": "Rule matches: VPN->Trust, web-browsing app, AG-Monitoring-Servers dest", "latency_ms": 0.3},
+        {"hop_number": 4, "component": "pa-trust-interface", "component_id": "ethernet1/5", "type": "Palo Alto Interface", "direction": "Outbound", "decision": "ROUTE", "details": "Traffic exits to Trust zone", "latency_ms": 0.2},
+        {"hop_number": 5, "component": "grafana-pa", "component_id": "10.50.1.40", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Grafana server reached via VPN", "latency_ms": 1.3}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0023",
+      "analysis_timestamp": "2026-01-13T10:52:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "webapp-prod-1",
+        "source_ip": "10.30.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "kafka-broker-1",
+        "destination_ip": "10.36.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 9092
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 0.9,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-004 allows TCP/9092 to sg-kafka-prod", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.36.0.0/24 via local VPC routing", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "sg-kafka-prod", "component_id": "sg-0a1b2c3d4e5f00004", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-301 allows TCP/9092 from sg-webapp-prod", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "kafka-broker-1", "component_id": "i-0kf123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Kafka broker reached - topic access granted", "latency_ms": 0.4}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0024",
+      "analysis_timestamp": "2026-01-13T10:53:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "prometheus-1",
+        "source_ip": "10.50.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "webapp-prod-1",
+        "destination_ip": "10.30.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 9100
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 0.7,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-monitoring", "component_id": "sg-0a1b2c3d4e5f00008", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-701 allows TCP/9100 to 10.0.0.0/8", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-monitoring", "component_id": "acl-0a1b2c3d4e5f00006", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all traffic to VirtualNetwork", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-monitoring", "component_id": "rtb-0a1b2c3d4e5f00006", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.30.0.0/16 via local VPC", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-005 allows TCP/9100 from sg-monitoring", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "webapp-prod-1", "component_id": "i-0abc123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Node exporter metrics endpoint accessible", "latency_ms": 0.2}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0025",
+      "analysis_timestamp": "2026-01-13T10:54:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "jenkins-master",
+        "source_ip": "10.70.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "github.com",
+        "destination_ip": "140.82.112.4",
+        "destination_type": "External",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 7,
+        "path_latency_ms": 45.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-jenkins", "component_id": "sg-0a1b2c3d4e5f00011", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1001 allows HTTPS to 0.0.0.0/0", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-cicd", "component_id": "acl-0a1b2c3d4e5f00008", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all outbound", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-cicd", "component_id": "rtb-0a1b2c3d4e5f00008", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 0.0.0.0/0 via nat-0a1b2c3d4e5f00002", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "nat-prod-1b", "component_id": "nat-0a1b2c3d4e5f00002", "type": "NAT Gateway", "direction": "Forward", "decision": "NAT", "details": "SNAT to elastic IP 54.123.45.68", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "acl-prod-public", "component_id": "acl-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all outbound", "latency_ms": 0.1},
+        {"hop_number": 6, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Outbound", "decision": "ROUTE", "details": "Traffic exits to internet", "latency_ms": 2.0},
+        {"hop_number": 7, "component": "github.com", "component_id": "140.82.112.4", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "GitHub API accessible", "latency_ms": 41.7}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0026",
+      "analysis_timestamp": "2026-01-13T10:55:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "vault-1",
+        "source_ip": "10.90.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "DynamoDB",
+        "destination_ip": "vpce-dynamodb",
+        "destination_type": "VPC Endpoint",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 2.8,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-vault", "component_id": "sg-0a1b2c3d4e5f00013", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1202 allows HTTPS to pl-dynamodb", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-vault", "component_id": "acl-0a1b2c3d4e5f00009", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-vault", "component_id": "rtb-0a1b2c3d4e5f00009", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to DynamoDB endpoint via pl-dynamodb prefix list", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "vpce-dynamodb", "component_id": "vpce-0a1b2c3d4e5f00002", "type": "VPC Gateway Endpoint", "direction": "Forward", "decision": "FORWARD", "details": "Gateway endpoint for DynamoDB", "latency_ms": 1.5},
+        {"hop_number": 5, "component": "DynamoDB", "component_id": "dynamodb.us-east-1.amazonaws.com", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "DynamoDB service reached via gateway endpoint", "latency_ms": 0.9}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0027",
+      "analysis_timestamp": "2026-01-13T10:56:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "splunk-indexer-1",
+        "source_ip": "10.80.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "S3",
+        "destination_ip": "vpce-s3",
+        "destination_type": "VPC Endpoint",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 3.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-splunk", "component_id": "sg-0a1b2c3d4e5f00012", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1101 allows HTTPS to pl-63a5400a (S3)", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-splunk", "component_id": "acl-0a1b2c3d4e5f00010", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-splunk", "component_id": "rtb-0a1b2c3d4e5f00010", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to S3 endpoint via pl-63a5400a prefix list", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "vpce-s3", "component_id": "vpce-0a1b2c3d4e5f00003", "type": "VPC Gateway Endpoint", "direction": "Forward", "decision": "FORWARD", "details": "Gateway endpoint for S3", "latency_ms": 2.0},
+        {"hop_number": 5, "component": "S3", "component_id": "s3.us-east-1.amazonaws.com", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "S3 service reached for log archival", "latency_ms": 1.1}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0028",
+      "analysis_timestamp": "2026-01-13T10:57:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "prod-west-webapp",
+        "source_ip": "10.130.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-west-2",
+        "destination": "shared-services-dns",
+        "destination_ip": "10.200.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-shared-east-1",
+        "protocol": "UDP",
+        "port": 53
+      },
+      "summary": {
+        "total_hops": 10,
+        "path_latency_ms": 65.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": ["Cross-region latency: 55ms"]
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-west", "component_id": "sg-west-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound allows UDP/53", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-west", "component_id": "acl-west-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-prod-west", "component_id": "rtb-west-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.200.0.0/16 via tgw-west", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "tgw-attach-vpc-prod-west", "component_id": "tgw-attach-west-prod", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Enters West region TGW", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "tgw-rtb-west", "component_id": "tgw-rtb-west", "type": "Transit Gateway Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.200.0.0/16 via cross-region peering", "latency_ms": 0.5},
+        {"hop_number": 6, "component": "tgw-peer-west-east", "component_id": "tgw-peer-east-west", "type": "Transit Gateway Peering", "direction": "Forward", "decision": "FORWARD", "details": "Cross-region peering us-west-2 to us-east-1", "latency_ms": 55.0},
+        {"hop_number": 7, "component": "tgw-rtb-prod", "component_id": "tgw-rtb-prod", "type": "Transit Gateway Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.200.0.0/16 to shared services", "latency_ms": 0.5},
+        {"hop_number": 8, "component": "tgw-attach-vpc-shared", "component_id": "tgw-attach-vpc-shared", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Exits to Shared Services VPC", "latency_ms": 1.0},
+        {"hop_number": 9, "component": "sg-shared-dns", "component_id": "sg-shared-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Allows UDP/53 from 10.0.0.0/8", "latency_ms": 0.1},
+        {"hop_number": 10, "component": "shared-services-dns", "component_id": "i-shared-dns-001", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "DNS server reached via cross-region path", "latency_ms": 7.0}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0029",
+      "analysis_timestamp": "2026-01-13T10:58:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "analytics-1",
+        "source_ip": "10.95.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "es-data-1",
+        "destination_ip": "10.85.1.20",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 9200
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 1.1,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-analytics-prod", "component_id": "sg-0a1b2c3d4e5f00015", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1404 allows TCP/9200 to sg-elasticsearch", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-analytics", "component_id": "acl-0a1b2c3d4e5f00011", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-analytics", "component_id": "rtb-0a1b2c3d4e5f00011", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.85.0.0/24 via local VPC", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "sg-elasticsearch", "component_id": "sg-0a1b2c3d4e5f00014", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule allows TCP/9200 from analytics SG", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "es-data-1", "component_id": "i-0es123def456789b", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Elasticsearch data node reached", "latency_ms": 0.6}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0030",
+      "analysis_timestamp": "2026-01-13T10:59:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "webapp-prod-1",
+        "source_ip": "10.30.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "cryptomining-pool.io",
+        "destination_ip": "203.0.113.200",
+        "destination_type": "External",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 3333
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "Block-Crypto-Mining-PA",
+        "blocking_reason": "Destination in crypto mining EDL - blocked by Palo Alto"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "No specific deny for this port", "latency_ms": null},
+        {"hop_number": 2, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to internet via Palo Alto firewall", "latency_ms": null},
+        {"hop_number": 3, "component": "pa-fw-prod-01", "component_id": "pa-fw-prod-01", "type": "Palo Alto Firewall", "direction": "Forward", "decision": "INSPECT", "details": "Traffic enters firewall for inspection", "latency_ms": null},
+        {"hop_number": 4, "component": "Block-Crypto-Mining", "component_id": "rule-52", "type": "Palo Alto Security Rule", "direction": "Forward", "decision": "BLOCKED", "details": "Destination 203.0.113.200 matches EDL-Crypto-Mining-Pools - DENY action with alert", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0031",
+      "analysis_timestamp": "2026-01-13T11:00:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "pci-webapp-1",
+        "source_ip": "10.150.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-pci-east-1",
+        "destination": "shared-services-vault",
+        "destination_ip": "10.200.1.50",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-shared-east-1",
+        "protocol": "TCP",
+        "port": 8200
+      },
+      "summary": {
+        "total_hops": 8,
+        "path_latency_ms": 4.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-pci-webapp", "component_id": "sg-pci-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound allows TCP/8200 to shared services", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-pci-app", "component_id": "acl-pci-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows traffic to 10.200.0.0/16", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-pci-private", "component_id": "rtb-pci-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.200.0.0/16 via Transit Gateway", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "tgw-attach-vpc-pci", "component_id": "tgw-attach-vpc-pci", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Enters TGW from PCI VPC", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "tgw-rtb-isolated", "component_id": "tgw-rtb-isolated", "type": "Transit Gateway Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Isolated route table - only shared services allowed", "latency_ms": 0.5},
+        {"hop_number": 6, "component": "tgw-attach-vpc-shared", "component_id": "tgw-attach-vpc-shared", "type": "Transit Gateway Attachment", "direction": "Forward", "decision": "ROUTE", "details": "Exits to Shared Services VPC", "latency_ms": 1.0},
+        {"hop_number": 7, "component": "sg-shared-vault", "component_id": "sg-shared-0a1b2c3d4e5f00002", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Allows TCP/8200 from PCI VPC CIDR", "latency_ms": 0.1},
+        {"hop_number": 8, "component": "shared-services-vault", "component_id": "i-shared-vault-001", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Vault server reached for secrets retrieval", "latency_ms": 1.5}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0032",
+      "analysis_timestamp": "2026-01-13T11:01:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "api-prod-1",
+        "source_ip": "10.31.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "okta.com",
+        "destination_ip": "54.201.45.67",
+        "destination_type": "External",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 7,
+        "path_latency_ms": 35.8,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-api-gateway", "component_id": "sg-0a1b2c3d4e5f00006", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule allows HTTPS to 0.0.0.0/0", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 110 allows TCP/443 outbound", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 0.0.0.0/0 via NAT Gateway", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "nat-prod-1a", "component_id": "nat-0a1b2c3d4e5f00001", "type": "NAT Gateway", "direction": "Forward", "decision": "NAT", "details": "SNAT to elastic IP", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "acl-prod-public", "component_id": "acl-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all outbound", "latency_ms": 0.1},
+        {"hop_number": 6, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Outbound", "decision": "ROUTE", "details": "Traffic exits to internet", "latency_ms": 2.0},
+        {"hop_number": 7, "component": "okta.com", "component_id": "54.201.45.67", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Okta SSO endpoint reached for authentication", "latency_ms": 32.3}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0033",
+      "analysis_timestamp": "2026-01-13T11:02:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "bastion-prod",
+        "source_ip": "10.20.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "postgres-primary",
+        "destination_ip": "10.40.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 22
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 0.8,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-bastion", "component_id": "sg-0a1b2c3d4e5f00007", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-601 allows SSH to 10.0.0.0/8", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-bastion", "component_id": "acl-0a1b2c3d4e5f00012", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-bastion", "component_id": "rtb-0a1b2c3d4e5f00012", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.40.0.0/16 via local VPC", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "sg-database-prod", "component_id": "sg-0a1b2c3d4e5f00002", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-104 allows SSH from sg-bastion", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "postgres-primary", "component_id": "i-0db123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Database server SSH accessible from bastion", "latency_ms": 0.3}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0034",
+      "analysis_timestamp": "2026-01-13T11:03:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "eks-node-1",
+        "source_ip": "10.60.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "eks-control-plane",
+        "destination_ip": "10.60.0.5",
+        "destination_type": "EKS API",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": 1.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-eks-nodes", "component_id": "sg-0a1b2c3d4e5f00009", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-804 allows TCP/443 to sg-eks-control", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "rtb-eks-private", "component_id": "rtb-0a1b2c3d4e5f00003", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to EKS control plane ENI", "latency_ms": 0.2},
+        {"hop_number": 3, "component": "sg-eks-control", "component_id": "sg-0a1b2c3d4e5f00010", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-902 allows TCP/443 from sg-eks-nodes", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "eks-control-plane", "component_id": "arn:aws:eks:...", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "EKS API server reached for kubelet communication", "latency_ms": 0.8}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0035",
+      "analysis_timestamp": "2026-01-13T11:04:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "kafka-broker-1",
+        "source_ip": "10.36.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "kafka-broker-2",
+        "destination_ip": "10.36.1.11",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 9093
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": 0.4,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-kafka-prod", "component_id": "sg-0a1b2c3d4e5f00004", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-303 allows TCP/9093 to sg-kafka-prod (self)", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "rtb-kafka", "component_id": "rtb-0a1b2c3d4e5f00004", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Local route within Kafka subnet", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "sg-kafka-prod", "component_id": "sg-0a1b2c3d4e5f00004", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-306 allows TCP/9093 from sg-kafka-prod (self)", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "kafka-broker-2", "component_id": "i-0kf123def456789b", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Kafka inter-broker replication successful", "latency_ms": 0.1}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0036",
+      "analysis_timestamp": "2026-01-13T11:05:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "Internet-GitHub",
+        "source_ip": "140.82.112.10",
+        "source_type": "GitHub Webhook",
+        "source_vpc": null,
+        "destination": "jenkins-master",
+        "destination_ip": "10.70.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 7,
+        "path_latency_ms": 18.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters VPC", "latency_ms": 2.0},
+        {"hop_number": 2, "component": "acl-prod-public", "component_id": "acl-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "Rule 100 allows TCP/443", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "sg-alb-jenkins", "component_id": "sg-0a1b2c3d4e5f00016", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Allows HTTPS from GitHub IP range 140.82.112.0/20", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "alb-jenkins", "component_id": "arn:aws:elasticloadbalancing:...", "type": "Load Balancer", "direction": "Forward", "decision": "FORWARD", "details": "ALB routes to Jenkins target group", "latency_ms": 3.0},
+        {"hop_number": 5, "component": "acl-cicd", "component_id": "acl-0a1b2c3d4e5f00008", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "Rule 100 allows from ALB subnet", "latency_ms": 0.1},
+        {"hop_number": 6, "component": "sg-jenkins", "component_id": "sg-0a1b2c3d4e5f00011", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-1003 allows HTTPS from GitHub", "latency_ms": 0.1},
+        {"hop_number": 7, "component": "jenkins-master", "component_id": "i-0jen123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Jenkins webhook endpoint accessible", "latency_ms": 13.1}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0037",
+      "analysis_timestamp": "2026-01-13T11:06:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "vault-1",
+        "source_ip": "10.90.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "vault-2",
+        "destination_ip": "10.90.1.11",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 8201
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": 0.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-vault", "component_id": "sg-0a1b2c3d4e5f00013", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1201 allows TCP/8201 to sg-vault (self)", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "rtb-vault", "component_id": "rtb-0a1b2c3d4e5f00009", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Local route within Vault subnet", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "sg-vault", "component_id": "sg-0a1b2c3d4e5f00013", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-1202 allows TCP/8201 from sg-vault (self)", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "vault-2", "component_id": "i-0vlt123def456789b", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Vault HA cluster communication successful", "latency_ms": 0.2}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0038",
+      "analysis_timestamp": "2026-01-13T11:07:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "webapp-prod-1",
+        "source_ip": "10.30.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "unknown-server",
+        "destination_ip": "192.168.1.100",
+        "destination_type": "Unknown",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 22
+      },
+      "summary": {
+        "total_hops": 3,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "rtb-private-app",
+        "blocking_reason": "No route to RFC1918 address - destination unreachable"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Default outbound allows this traffic", "latency_ms": null},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal", "latency_ms": null},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "BLOCKED", "details": "No route to 192.168.0.0/16 - destination not in VPC CIDR or TGW routes", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0039",
+      "analysis_timestamp": "2026-01-13T11:08:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "es-data-1",
+        "source_ip": "10.85.1.20",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "es-data-2",
+        "destination_ip": "10.85.1.21",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 9300
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": 0.4,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-elasticsearch", "component_id": "sg-0a1b2c3d4e5f00014", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1301 allows TCP/9300 to sg-elasticsearch (self)", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "rtb-elasticsearch", "component_id": "rtb-0a1b2c3d4e5f00013", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Local route within ES subnet", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "sg-elasticsearch", "component_id": "sg-0a1b2c3d4e5f00014", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-1303 allows TCP/9300 from sg-elasticsearch (self)", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "es-data-2", "component_id": "i-0es123def456789c", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Elasticsearch transport layer communication successful", "latency_ms": 0.1}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0040",
+      "analysis_timestamp": "2026-01-13T11:09:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "alertmanager-1",
+        "source_ip": "10.50.1.12",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "api.pagerduty.com",
+        "destination_ip": "52.206.43.0",
+        "destination_type": "External",
+        "destination_vpc": null,
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 7,
+        "path_latency_ms": 28.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-monitoring", "component_id": "sg-0a1b2c3d4e5f00008", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-702 allows HTTPS to 0.0.0.0/0", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-monitoring", "component_id": "acl-0a1b2c3d4e5f00006", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all outbound", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-monitoring", "component_id": "rtb-0a1b2c3d4e5f00006", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 0.0.0.0/0 via NAT Gateway", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "nat-prod-1a", "component_id": "nat-0a1b2c3d4e5f00001", "type": "NAT Gateway", "direction": "Forward", "decision": "NAT", "details": "SNAT to elastic IP", "latency_ms": 1.0},
+        {"hop_number": 5, "component": "acl-prod-public", "component_id": "acl-0a1b2c3d4e5f00001", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all outbound", "latency_ms": 0.1},
+        {"hop_number": 6, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Outbound", "decision": "ROUTE", "details": "Traffic exits to internet", "latency_ms": 2.0},
+        {"hop_number": 7, "component": "api.pagerduty.com", "component_id": "52.206.43.0", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "PagerDuty API accessible for alert notifications", "latency_ms": 25.0}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0041",
+      "analysis_timestamp": "2026-01-13T11:10:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "jupyter-hub",
+        "source_ip": "10.95.1.20",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "postgres-primary",
+        "destination_ip": "10.40.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 0.9,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-analytics-prod", "component_id": "sg-0a1b2c3d4e5f00015", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1401 allows TCP/5432 to sg-database-prod", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-analytics", "component_id": "acl-0a1b2c3d4e5f00011", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-analytics", "component_id": "rtb-0a1b2c3d4e5f00011", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.40.0.0/16 via local VPC", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "sg-database-prod", "component_id": "sg-0a1b2c3d4e5f00002", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-103 allows TCP/5432 from sg-analytics-prod", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "postgres-primary", "component_id": "i-0db123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Database accessible for analytics queries", "latency_ms": 0.4}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0042",
+      "analysis_timestamp": "2026-01-13T11:11:00Z",
+      "status": "COMPLETED",
+      "result": "BLOCKED",
+      "input": {
+        "source": "Internet",
+        "source_ip": "203.0.113.100",
+        "source_type": "External",
+        "source_vpc": null,
+        "destination": "bastion-prod",
+        "destination_ip": "10.20.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 22
+      },
+      "summary": {
+        "total_hops": 3,
+        "path_latency_ms": null,
+        "path_status": "BLOCKED",
+        "blocking_component": "sg-bastion",
+        "blocking_reason": "Source IP not in allowed VPN or emergency IP list"
+      },
+      "hops": [
+        {"hop_number": 1, "component": "igw-prod", "component_id": "igw-0a1b2c3d4e5f00001", "type": "Internet Gateway", "direction": "Inbound", "decision": "ROUTE", "details": "Traffic enters VPC", "latency_ms": null},
+        {"hop_number": 2, "component": "acl-bastion", "component_id": "acl-0a1b2c3d4e5f00012", "type": "Network ACL", "direction": "Inbound", "decision": "ALLOW", "details": "NACL allows for evaluation", "latency_ms": null},
+        {"hop_number": 3, "component": "sg-bastion", "component_id": "sg-0a1b2c3d4e5f00007", "type": "Security Group", "direction": "Inbound", "decision": "BLOCKED", "details": "No rule allows SSH from 203.0.113.100 - only VPN (10.100.0.0/16) and emergency IP (203.0.113.50/32) allowed", "latency_ms": null}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0043",
+      "analysis_timestamp": "2026-01-13T11:12:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "splunk-search-1",
+        "source_ip": "10.80.1.20",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "splunk-indexer-1",
+        "destination_ip": "10.80.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 9997
+      },
+      "summary": {
+        "total_hops": 4,
+        "path_latency_ms": 0.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-splunk", "component_id": "sg-0a1b2c3d4e5f00012", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound rule sgr-out-1102 allows TCP/9997 to sg-splunk (self)", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "rtb-splunk", "component_id": "rtb-0a1b2c3d4e5f00010", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Local route within Splunk subnet", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "sg-splunk", "component_id": "sg-0a1b2c3d4e5f00012", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound rule sgr-in-1103 allows TCP/9997 from sg-splunk (self)", "latency_ms": 0.1},
+        {"hop_number": 4, "component": "splunk-indexer-1", "component_id": "i-0spl123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Splunk search head to indexer communication successful", "latency_ms": 0.2}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0044",
+      "analysis_timestamp": "2026-01-13T11:13:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "webapp-prod-1",
+        "source_ip": "10.30.1.10",
+        "source_type": "EC2",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "sqs-orders-queue",
+        "destination_ip": "vpce-sqs",
+        "destination_type": "VPC Endpoint",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 443
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 2.2,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-webapp-prod", "component_id": "sg-0a1b2c3d4e5f00001", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Outbound allows HTTPS to VPC endpoints", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-prod-private", "component_id": "acl-0a1b2c3d4e5f00002", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-private-app", "component_id": "rtb-0a1b2c3d4e5f00001", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route to SQS endpoint via local ENI", "latency_ms": 0.2},
+        {"hop_number": 4, "component": "vpce-sqs", "component_id": "vpce-0a1b2c3d4e5f00004", "type": "VPC Interface Endpoint", "direction": "Forward", "decision": "FORWARD", "details": "PrivateLink endpoint for SQS", "latency_ms": 1.5},
+        {"hop_number": 5, "component": "SQS", "component_id": "sqs.us-east-1.amazonaws.com", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "SQS service reached via PrivateLink", "latency_ms": 0.3}
+      ]
+    },
+    {
+      "analysis_id": "PATH-0045",
+      "analysis_timestamp": "2026-01-13T11:14:00Z",
+      "status": "COMPLETED",
+      "result": "SUCCESS",
+      "input": {
+        "source": "lambda-order-processor",
+        "source_ip": "10.65.1.50",
+        "source_type": "Lambda",
+        "source_vpc": "vpc-prod-east-1",
+        "destination": "postgres-primary",
+        "destination_ip": "10.40.1.10",
+        "destination_type": "EC2",
+        "destination_vpc": "vpc-prod-east-1",
+        "protocol": "TCP",
+        "port": 5432
+      },
+      "summary": {
+        "total_hops": 5,
+        "path_latency_ms": 1.5,
+        "path_status": "REACHABLE",
+        "bottlenecks": []
+      },
+      "hops": [
+        {"hop_number": 1, "component": "sg-lambda-vpc", "component_id": "sg-0a1b2c3d4e5f00017", "type": "Security Group", "direction": "Outbound", "decision": "ALLOW", "details": "Lambda SG allows outbound to database", "latency_ms": 0.1},
+        {"hop_number": 2, "component": "acl-lambda", "component_id": "acl-0a1b2c3d4e5f00014", "type": "Network ACL", "direction": "Outbound", "decision": "ALLOW", "details": "Rule 100 allows all internal traffic", "latency_ms": 0.1},
+        {"hop_number": 3, "component": "rtb-lambda", "component_id": "rtb-0a1b2c3d4e5f00014", "type": "Route Table", "direction": "Forward", "decision": "ROUTE", "details": "Route 10.40.0.0/16 via local VPC", "latency_ms": 0.3},
+        {"hop_number": 4, "component": "sg-database-prod", "component_id": "sg-0a1b2c3d4e5f00002", "type": "Security Group", "direction": "Inbound", "decision": "ALLOW", "details": "Inbound allows PostgreSQL from Lambda SG", "latency_ms": 0.1},
+        {"hop_number": 5, "component": "postgres-primary", "component_id": "i-0db123def456789a", "type": "Destination", "direction": "N/A", "decision": "REACHED", "details": "Lambda function can access database", "latency_ms": 0.9}
+      ]
+    }
+  ]
+}

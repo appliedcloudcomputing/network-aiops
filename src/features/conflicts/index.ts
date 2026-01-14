@@ -1,0 +1,1 @@
+export { ConflictDetectionView } from './ConflictDetectionView';
