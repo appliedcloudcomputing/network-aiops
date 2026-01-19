@@ -60,6 +60,54 @@ export interface SecurityCheck {
   details?: string;
 }
 
+export interface ValidationMessage {
+  id: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  message: string;
+  timestamp: string;
+  dismissible: boolean;
+  actionLabel?: string;
+  actionUrl?: string;
+}
+
+export interface ValidationMetrics {
+  totalValidations: number;
+  successfulValidations: number;
+  failedValidations: number;
+  totalIssues: number;
+  errorCount: number;
+  warningCount: number;
+  infoCount: number;
+  avgSyntaxScore: number;
+  avgSecurityScore: number;
+  avgComplianceScore: number;
+  topPlatform: ValidationPlatform;
+  lastValidation: string;
+}
+
+export interface ValidationBestPractice {
+  id: string;
+  title: string;
+  description: string;
+  category: ValidationCategory;
+  severity: ValidationSeverity;
+  examples: {
+    bad: string;
+    good: string;
+    explanation: string;
+  };
+  platforms: ValidationPlatform[];
+}
+
+export interface ValidationDashboardData {
+  recentValidations: ValidationHistory[];
+  metrics: ValidationMetrics;
+  bestPractices: ValidationBestPractice[];
+  commonIssues: ValidationIssue[];
+  messages: ValidationMessage[];
+}
+
 export const PLATFORM_EXAMPLES: Record<ValidationPlatform, string> = {
   aws: `# AWS Security Group Rules (CLI format)
 aws ec2 authorize-security-group-ingress \\

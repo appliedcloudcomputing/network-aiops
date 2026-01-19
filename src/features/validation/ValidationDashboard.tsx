@@ -5,8 +5,9 @@
 import React, { useState } from 'react';
 import { PageContainer, Card } from '../../components';
 import { useValidation } from './hooks/useValidation';
-import type { ValidationPlatform, ValidationIssue, SecurityCheck, ValidationHistory } from '../../types/validation';
+import type { ValidationPlatform, ValidationIssue, SecurityCheck, ValidationHistory, ValidationMessage } from '../../types/validation';
 import { PLATFORM_EXAMPLES } from '../../types/validation';
+import { validationDashboardData } from '../../data/validationDashboardData';
 
 const PLATFORMS: { id: ValidationPlatform; name: string; category: 'cloud' | 'firewall' | 'linux' }[] = [
   { id: 'aws', name: 'AWS Security Group', category: 'cloud' },
@@ -35,6 +36,17 @@ export const ValidationDashboard: React.FC = () => {
   } = useValidation();
 
   const [showExample, setShowExample] = useState(false);
+  const [dismissedMessages, setDismissedMessages] = useState<Set<string>>(new Set());
+  const [selectedBestPracticeCategory, setSelectedBestPracticeCategory] = useState<'all' | 'security' | 'best_practice' | 'compliance' | 'syntax'>('all');
+
+  const handleDismissMessage = (messageId: string) => {
+    setDismissedMessages(prev => new Set(prev).add(messageId));
+  };
+
+  const activeMessages = validationDashboardData.messages.filter(msg => !dismissedMessages.has(msg.id));
+  const filteredBestPractices = selectedBestPracticeCategory === 'all'
+    ? validationDashboardData.bestPractices
+    : validationDashboardData.bestPractices.filter(bp => bp.category === selectedBestPracticeCategory);
 
   const handleLoadExample = () => {
     setContent(PLATFORM_EXAMPLES[platform]);
@@ -44,6 +56,95 @@ export const ValidationDashboard: React.FC = () => {
 
   return (
     <PageContainer>
+      {/* Dashboard Overview - Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <div className="text-sm opacity-90 mb-1">Total Validations</div>
+          <div className="text-3xl font-bold">{validationDashboardData.metrics.totalValidations.toLocaleString()}</div>
+          <div className="text-xs opacity-75 mt-1">
+            {validationDashboardData.metrics.successfulValidations} successful
+          </div>
+        </Card>
+        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+          <div className="text-sm opacity-90 mb-1">Avg Security Score</div>
+          <div className="text-3xl font-bold">{validationDashboardData.metrics.avgSecurityScore}%</div>
+          <div className="text-xs opacity-75 mt-1">
+            Syntax: {validationDashboardData.metrics.avgSyntaxScore}%
+          </div>
+        </Card>
+        <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+          <div className="text-sm opacity-90 mb-1">Total Issues</div>
+          <div className="text-3xl font-bold">{validationDashboardData.metrics.totalIssues.toLocaleString()}</div>
+          <div className="text-xs opacity-75 mt-1">
+            {validationDashboardData.metrics.errorCount} errors, {validationDashboardData.metrics.warningCount} warnings
+          </div>
+        </Card>
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <div className="text-sm opacity-90 mb-1">Top Platform</div>
+          <div className="text-3xl font-bold uppercase">{validationDashboardData.metrics.topPlatform}</div>
+          <div className="text-xs opacity-75 mt-1">
+            Compliance: {validationDashboardData.metrics.avgComplianceScore}%
+          </div>
+        </Card>
+      </div>
+
+      {/* Validation Messages */}
+      {activeMessages.length > 0 && (
+        <div className="mb-6 space-y-3">
+          {activeMessages.map((message) => (
+            <ValidationMessageAlert
+              key={message.id}
+              message={message}
+              onDismiss={() => handleDismissMessage(message.id)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Best Practices Section */}
+      <Card className="bg-white shadow-lg mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-slate-800">Validation Best Practices</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedBestPracticeCategory('all')}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                selectedBestPracticeCategory === 'all'
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setSelectedBestPracticeCategory('security')}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                selectedBestPracticeCategory === 'security'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              Security
+            </button>
+            <button
+              onClick={() => setSelectedBestPracticeCategory('best_practice')}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                selectedBestPracticeCategory === 'best_practice'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              Best Practices
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto">
+          {filteredBestPractices.map((bp) => (
+            <BestPracticeCard key={bp.id} practice={bp} />
+          ))}
+        </div>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Panel - Input */}
         <div className="lg:col-span-2 space-y-6">
@@ -391,6 +492,177 @@ const HistoryItem: React.FC<{ item: ValidationHistory }> = ({ item }) => {
       <p className="text-xs text-slate-400 mt-1">
         {new Date(item.timestamp).toLocaleString()}
       </p>
+    </div>
+  );
+};
+
+// Validation Message Alert Component
+const ValidationMessageAlert: React.FC<{ message: ValidationMessage; onDismiss: () => void }> = ({ message, onDismiss }) => {
+  const messageConfig = {
+    success: {
+      bg: 'bg-green-50',
+      border: 'border-green-200',
+      text: 'text-green-700',
+      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      iconColor: 'text-green-500',
+    },
+    error: {
+      bg: 'bg-red-50',
+      border: 'border-red-200',
+      text: 'text-red-700',
+      icon: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+      iconColor: 'text-red-500',
+    },
+    warning: {
+      bg: 'bg-amber-50',
+      border: 'border-amber-200',
+      text: 'text-amber-700',
+      icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+      iconColor: 'text-amber-500',
+    },
+    info: {
+      bg: 'bg-blue-50',
+      border: 'border-blue-200',
+      text: 'text-blue-700',
+      icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+      iconColor: 'text-blue-500',
+    },
+  };
+
+  const config = messageConfig[message.type];
+
+  return (
+    <div className={`${config.bg} ${config.border} border rounded-lg p-4`}>
+      <div className="flex items-start gap-3">
+        <svg className={`w-6 h-6 ${config.iconColor} flex-shrink-0 mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={config.icon} />
+        </svg>
+        <div className="flex-1">
+          <h4 className={`font-semibold ${config.text} mb-1`}>{message.title}</h4>
+          <p className="text-sm text-slate-600">{message.message}</p>
+          <div className="flex items-center gap-3 mt-2">
+            <span className="text-xs text-slate-500">
+              {new Date(message.timestamp).toLocaleString()}
+            </span>
+            {message.actionLabel && message.actionUrl && (
+              <a
+                href={message.actionUrl}
+                className={`text-xs font-medium ${config.text} hover:underline`}
+              >
+                {message.actionLabel} →
+              </a>
+            )}
+          </div>
+        </div>
+        {message.dismissible && (
+          <button
+            onClick={onDismiss}
+            className="text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Best Practice Card Component
+const BestPracticeCard: React.FC<{ practice: typeof validationDashboardData.bestPractices[0] }> = ({ practice }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const severityConfig = {
+    error: { bg: 'bg-red-100', text: 'text-red-700', badge: 'bg-red-500' },
+    warning: { bg: 'bg-amber-100', text: 'text-amber-700', badge: 'bg-amber-500' },
+    info: { bg: 'bg-blue-100', text: 'text-blue-700', badge: 'bg-blue-500' },
+  };
+
+  const categoryConfig = {
+    syntax: { bg: 'bg-purple-100', text: 'text-purple-700' },
+    security: { bg: 'bg-red-100', text: 'text-red-700' },
+    best_practice: { bg: 'bg-blue-100', text: 'text-blue-700' },
+    compliance: { bg: 'bg-green-100', text: 'text-green-700' },
+  };
+
+  const severity = severityConfig[practice.severity];
+  const category = categoryConfig[practice.category];
+
+  return (
+    <div className="border border-slate-200 rounded-lg overflow-hidden">
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className={`w-2 h-2 rounded-full ${severity.badge}`}></span>
+              <span className={`text-xs px-2 py-0.5 rounded ${category.bg} ${category.text} font-medium`}>
+                {practice.category.replace('_', ' ')}
+              </span>
+            </div>
+            <h4 className="font-semibold text-slate-800 text-sm">{practice.title}</h4>
+          </div>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="text-cyan-600 hover:text-cyan-700 ml-2"
+          >
+            <svg
+              className={`w-5 h-5 transition-transform ${expanded ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+        <p className="text-xs text-slate-600 mb-2">{practice.description}</p>
+        <div className="flex flex-wrap gap-1">
+          {practice.platforms.slice(0, 3).map((platform) => (
+            <span key={platform} className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+              {platform}
+            </span>
+          ))}
+          {practice.platforms.length > 3 && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+              +{practice.platforms.length - 3} more
+            </span>
+          )}
+        </div>
+      </div>
+      {expanded && (
+        <div className="border-t border-slate-200 p-4 bg-slate-50">
+          <div className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span className="text-xs font-semibold text-slate-700">Bad Example:</span>
+              </div>
+              <pre className="text-xs bg-red-50 text-red-800 p-2 rounded font-mono overflow-x-auto">
+                {practice.examples.bad}
+              </pre>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-xs font-semibold text-slate-700">Good Example:</span>
+              </div>
+              <pre className="text-xs bg-green-50 text-green-800 p-2 rounded font-mono overflow-x-auto">
+                {practice.examples.good}
+              </pre>
+            </div>
+            <div className="pt-2 border-t border-slate-200">
+              <p className="text-xs text-slate-600">
+                <span className="font-semibold">Explanation:</span> {practice.examples.explanation}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
