@@ -16,3 +16,4 @@ export * from './validation';
 export * from './pathAnalysis';
 export * from './opsMetrics';
 export * from './dependencyMap';
+export * from './incidentCorrelation';
