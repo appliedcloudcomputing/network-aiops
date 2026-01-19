@@ -8,7 +8,6 @@ import {
   DashboardView,
   ComplianceDashboard,
   RealTimeMonitoringDashboard,
-  DependencyMapView,
   IncidentCorrelationView,
   CloudManagementView,
   MultiCloudVisibilityView,
@@ -24,6 +23,7 @@ import {
   SettingsView,
 } from '../features';
 import { OpsValueDashboard } from '../features/ops-value/OpsValueDashboard';
+import { DependencyMapViewEnhanced } from '../features/dependency-map/DependencyMapViewEnhanced';
 
 interface ViewRouterProps {
   activeView: ViewId;
@@ -40,7 +40,7 @@ export const ViewRouter: React.FC<ViewRouterProps> = ({ activeView, onNavigate }
     opsvalue: OpsValueDashboard,
     compliance: ComplianceDashboard,
     monitoring: RealTimeMonitoringDashboard,
-    dependencymap: DependencyMapView,
+    dependencymap: DependencyMapViewEnhanced,
     incidents: IncidentCorrelationView,
     cloudmanagement: CloudManagementView,
     multicloudvisibility: MultiCloudVisibilityView,

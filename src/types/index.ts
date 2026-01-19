@@ -15,3 +15,4 @@ export * from './ruleGenerator';
 export * from './validation';
 export * from './pathAnalysis';
 export * from './opsMetrics';
+export * from './dependencyMap';
