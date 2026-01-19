@@ -109,6 +109,60 @@ export interface TopologyEdge {
   status: 'healthy' | 'degraded' | 'critical';
 }
 
+// Enhanced types for graph-based visualization
+export type HopType = 'source' | 'firewall' | 'cloud_gateway' | 'nsg' | 'security_group' | 'router' | 'destination' | 'unknown';
+export type HopIssueType = 'blocked' | 'asymmetric_routing' | 'missing_rule' | 'high_latency' | 'packet_loss';
+
+export interface PathHopEnhanced extends PathHop {
+  hopType: HopType;
+  deviceName?: string;
+  issues: HopIssue[];
+  securityRules?: PathSecurityRule[];
+  returnPath?: PathReturnHop | null;  // For asymmetric routing detection
+}
+
+export interface HopIssue {
+  type: HopIssueType;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  recommendation: string;
+  details?: string;
+}
+
+export interface PathSecurityRule {
+  id: string;
+  name: string;
+  action: 'allow' | 'deny';
+  source: string;
+  destination: string;
+  port: string;
+  protocol: string;
+  priority: number;
+  matched: boolean;
+}
+
+export interface PathReturnHop {
+  hopNumber: number;
+  ipAddress: string;
+  isSymmetric: boolean;
+  asymmetryReason?: string;
+}
+
+export interface PathGraphVisualization {
+  id: string;
+  source: string;
+  destination: string;
+  hops: PathHopEnhanced[];
+  issues: {
+    blocked: number;
+    asymmetricRouting: number;
+    missingRules: number;
+    total: number;
+  };
+  health: PathHealth;
+  hasReturnPath: boolean;
+}
+
 // Common destinations for quick access
 export const COMMON_DESTINATIONS = [
   { name: 'Google DNS', ip: '8.8.8.8' },

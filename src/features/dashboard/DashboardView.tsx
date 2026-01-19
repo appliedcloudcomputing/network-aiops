@@ -7,26 +7,27 @@ import React from 'react';
 import { PageContainer, GridContainer } from '../../components';
 import { useCurrentTime } from '../../hooks';
 import { useDashboardData } from './hooks/useDashboardData';
+import type { ViewId } from '../../types';
 import {
   WelcomeHeader,
   MetricsGrid,
   PlatformDistribution,
   RecentActivity,
-  QuickActions,
+  LandingTiles,
   NetworkStats,
 } from './components';
 
 interface DashboardViewProps {
-  onNavigate?: (path: string) => void;
+  onNavigate?: (viewId: ViewId) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
   const currentTime = useCurrentTime();
   const { metrics, recentActivity, platformDistribution, summaryStats, networkStats, isLoading } = useDashboardData();
 
-  const handleNavigate = (path: string) => {
+  const handleNavigate = (viewId: ViewId) => {
     if (onNavigate) {
-      onNavigate(path);
+      onNavigate(viewId);
     }
   };
 
@@ -45,10 +46,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
       <WelcomeHeader currentTime={currentTime} />
       <MetricsGrid metrics={metrics} />
 
-      {/* Quick Actions Row */}
-      <div className="mb-6">
-        <QuickActions onNavigate={handleNavigate} />
-      </div>
+      {/* Landing Tiles - Quick Access to Key Features */}
+      <LandingTiles onNavigate={handleNavigate} />
 
       {/* Main content grid */}
       <GridContainer cols={3}>

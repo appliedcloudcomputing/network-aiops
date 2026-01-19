@@ -10,6 +10,7 @@ interface CardProps {
   variant?: 'default' | 'gradient' | 'bordered';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hover?: boolean;
+  onClick?: () => void;
 }
 
 const PADDING_CLASSES = {
@@ -31,13 +32,16 @@ export const Card: React.FC<CardProps> = ({
   variant = 'default',
   padding = 'lg',
   hover = false,
+  onClick,
 }) => {
   const baseClasses = 'rounded-xl transition-all';
   const hoverClasses = hover ? 'hover:border-slate-600 hover:scale-[1.02]' : '';
+  const cursorClass = onClick ? 'cursor-pointer' : '';
 
   return (
     <div
-      className={`${baseClasses} ${VARIANT_CLASSES[variant]} ${PADDING_CLASSES[padding]} ${hoverClasses} ${className}`}
+      className={`${baseClasses} ${VARIANT_CLASSES[variant]} ${PADDING_CLASSES[padding]} ${hoverClasses} ${cursorClass} ${className}`}
+      onClick={onClick}
     >
       {children}
     </div>

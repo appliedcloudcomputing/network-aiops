@@ -6,13 +6,17 @@ import type { MenuItem, ViewId, ViewInfo } from '../types';
 
 export const MENU_ITEMS: MenuItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { id: 'opsvalue', label: 'Ops Value Dashboard', icon: 'opsvalue' },
   { id: 'compliance', label: 'Compliance', icon: 'compliance' },
   { id: 'monitoring', label: 'Real-Time Monitoring', icon: 'monitoring' },
   { id: 'dependencymap', label: 'Dependency Map', icon: 'topology' },
   { id: 'incidents', label: 'Incident Correlation', icon: 'incidents' },
   { id: 'cloudmanagement', label: 'Cloud Management', icon: 'cloud' },
-  { id: 'pathanalysis', label: 'Path Analysis', icon: 'path' },
+  { id: 'multicloudvisibility', label: 'Multi-Cloud Visibility', icon: 'multicloud' },
+  { id: 'pathanalysis', label: 'Path Analysis (Classic)', icon: 'path' },
+  { id: 'pathanalysisenhanced', label: 'Path Analysis (Graph)', icon: 'path' },
   { id: 'routeintelligence', label: 'Route Intelligence', icon: 'route' },
+  { id: 'l1whitelisting', label: 'L1 Whitelisting', icon: 'whitelist' },
   { id: 'tickets', label: 'Create Ticket', icon: 'ticket' },
   { id: 'statusboard', label: 'Ticket Status', icon: 'kanban' },
   { id: 'rulegenerator', label: 'Rule Generator', icon: 'code' },
@@ -50,6 +54,10 @@ export const VIEW_INFO_MAP: Record<ViewId, ViewInfo> = {
     title: 'Network Path Analysis',
     subtitle: 'Trace traffic flow through security controls and routing components',
   },
+  pathanalysisenhanced: {
+    title: 'Traffic Path Analysis (Graph View)',
+    subtitle: 'Graph-based visualization with blocked hop, asymmetric routing, and missing rule detection',
+  },
   routeintelligence: {
     title: 'Route Intelligence',
     subtitle: 'AI-powered anomaly detection for network routing issues',
@@ -73,6 +81,18 @@ export const VIEW_INFO_MAP: Record<ViewId, ViewInfo> = {
   conflicts: {
     title: 'Conflict Detection Engine',
     subtitle: 'Identify Allow/Deny conflicts, Shadowing & Redundancy issues',
+  },
+  l1whitelisting: {
+    title: 'L1 Firewall Whitelisting',
+    subtitle: 'AI-powered ServiceNow ticket processing with automatic implementation',
+  },
+  multicloudvisibility: {
+    title: 'Multi-Cloud Visibility',
+    subtitle: 'Unified view of network infrastructure across AWS, Azure, GCP, OCI, and On-Premises',
+  },
+  opsvalue: {
+    title: 'Ops Value Dashboard',
+    subtitle: 'Metrics for management: Ticket TAT, Automation Rate, Change Success, Compliance & ROI',
   },
   settings: {
     title: 'Settings & Configuration',

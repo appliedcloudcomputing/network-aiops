@@ -10,12 +10,16 @@ export type ViewId =
   | 'incidents'
   | 'cloudmanagement'
   | 'pathanalysis'
+  | 'pathanalysisenhanced'
   | 'routeintelligence'
   | 'tickets'
   | 'statusboard'
+  | 'l1whitelisting'
   | 'rulegenerator'
   | 'validation'
   | 'conflicts'
+  | 'multicloudvisibility'
+  | 'opsvalue'
   | 'settings';
 
 export type IconName =
@@ -29,9 +33,12 @@ export type IconName =
   | 'route'
   | 'ticket'
   | 'kanban'
+  | 'whitelist'
   | 'code'
   | 'validation'
   | 'conflicts'
+  | 'multicloud'
+  | 'opsvalue'
   | 'settings';
 
 export interface MenuItem {

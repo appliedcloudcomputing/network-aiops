@@ -24,7 +24,7 @@ export const App: React.FC = () => {
       onViewChange={setActiveView}
       onToggleSidebar={toggleSidebar}
     >
-      <ViewRouter activeView={activeView} />
+      <ViewRouter activeView={activeView} onNavigate={setActiveView} />
     </MainLayout>
   );
 };

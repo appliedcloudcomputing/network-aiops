@@ -11,38 +11,51 @@ import {
   DependencyMapView,
   IncidentCorrelationView,
   CloudManagementView,
+  MultiCloudVisibilityView,
   PathAnalysisView,
+  PathAnalysisEnhancedView,
   RouteIntelligenceView,
   TicketFormView,
   TicketStatusBoard,
+  L1WhitelistingView,
   RuleGeneratorView,
   ValidationDashboard,
   ConflictDetectionView,
   SettingsView,
 } from '../features';
+import { OpsValueDashboard } from '../features/ops-value/OpsValueDashboard';
 
 interface ViewRouterProps {
   activeView: ViewId;
+  onNavigate: (viewId: ViewId) => void;
 }
 
-const VIEW_COMPONENTS: Record<ViewId, React.FC> = {
-  dashboard: DashboardView,
-  compliance: ComplianceDashboard,
-  monitoring: RealTimeMonitoringDashboard,
-  dependencymap: DependencyMapView,
-  incidents: IncidentCorrelationView,
-  cloudmanagement: CloudManagementView,
-  pathanalysis: PathAnalysisView,
-  routeintelligence: RouteIntelligenceView,
-  tickets: TicketFormView,
-  statusboard: TicketStatusBoard,
-  rulegenerator: RuleGeneratorView,
-  validation: ValidationDashboard,
-  conflicts: ConflictDetectionView,
-  settings: SettingsView,
-};
+export const ViewRouter: React.FC<ViewRouterProps> = ({ activeView, onNavigate }) => {
+  // Special handling for Dashboard to pass navigation prop
+  if (activeView === 'dashboard') {
+    return <DashboardView onNavigate={onNavigate} />;
+  }
 
-export const ViewRouter: React.FC<ViewRouterProps> = ({ activeView }) => {
+  const VIEW_COMPONENTS: Record<Exclude<ViewId, 'dashboard'>, React.FC> = {
+    opsvalue: OpsValueDashboard,
+    compliance: ComplianceDashboard,
+    monitoring: RealTimeMonitoringDashboard,
+    dependencymap: DependencyMapView,
+    incidents: IncidentCorrelationView,
+    cloudmanagement: CloudManagementView,
+    multicloudvisibility: MultiCloudVisibilityView,
+    pathanalysis: PathAnalysisView,
+    pathanalysisenhanced: PathAnalysisEnhancedView,
+    routeintelligence: RouteIntelligenceView,
+    tickets: TicketFormView,
+    statusboard: TicketStatusBoard,
+    l1whitelisting: L1WhitelistingView,
+    rulegenerator: RuleGeneratorView,
+    validation: ValidationDashboard,
+    conflicts: ConflictDetectionView,
+    settings: SettingsView,
+  };
+
   const ViewComponent = VIEW_COMPONENTS[activeView];
 
   if (!ViewComponent) {
