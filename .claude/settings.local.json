@@ -10,7 +10,10 @@
       "Bash(npx vercel:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(vercel:*)"
+      "Bash(vercel:*)",
+      "Bash(ls:*)",
+      "Read(//Users/shubho/Documents/development/network-aiops/**)",
+      "Bash(done)"
     ]
   }
 }

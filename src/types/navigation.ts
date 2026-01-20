@@ -10,7 +10,6 @@ export type ViewId =
   | 'incidents'
   | 'cloudmanagement'
   | 'pathanalysis'
-  | 'pathanalysisenhanced'
   | 'routeintelligence'
   | 'tickets'
   | 'statusboard'

@@ -9,7 +9,7 @@ export { DependencyMapView } from './dependency-map';
 export { IncidentCorrelationView } from './incidents';
 export { CloudManagementView } from './cloud-management';
 export { MultiCloudVisibilityView } from './multi-cloud';
-export { PathAnalysisView, PathAnalysisEnhancedView } from './path-analysis';
+export { PathAnalysisView } from './path-analysis';
 export { RouteIntelligenceView } from './route-intelligence';
 export { TicketFormView, TicketStatusBoard, L1WhitelistingView } from './tickets';
 export { RuleGeneratorView } from './rule-generator';

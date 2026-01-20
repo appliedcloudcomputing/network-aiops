@@ -41,7 +41,7 @@ export const LandingTiles: React.FC<LandingTilesProps> = ({ onNavigate }) => {
       icon: '🔍',
       gradientFrom: 'from-purple-600',
       gradientTo: 'to-purple-800',
-      route: 'pathanalysisenhanced',
+      route: 'pathanalysis',
     },
     {
       id: 'multi-cloud-route-validation',

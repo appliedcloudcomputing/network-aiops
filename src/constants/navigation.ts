@@ -13,8 +13,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { id: 'incidents', label: 'Incident Correlation', icon: 'incidents' },
   { id: 'cloudmanagement', label: 'Cloud Management', icon: 'cloud' },
   { id: 'multicloudvisibility', label: 'Multi-Cloud Visibility', icon: 'multicloud' },
-  { id: 'pathanalysis', label: 'Path Analysis (Classic)', icon: 'path' },
-  { id: 'pathanalysisenhanced', label: 'Path Analysis (Graph)', icon: 'path' },
+  { id: 'pathanalysis', label: 'Path Analysis', icon: 'path' },
   { id: 'routeintelligence', label: 'Route Intelligence', icon: 'route' },
   { id: 'l1whitelisting', label: 'L1 Whitelisting', icon: 'whitelist' },
   { id: 'tickets', label: 'Create Ticket', icon: 'ticket' },
@@ -51,12 +50,8 @@ export const VIEW_INFO_MAP: Record<ViewId, ViewInfo> = {
     subtitle: 'Unified view of AWS, Azure & GCP security controls',
   },
   pathanalysis: {
-    title: 'Network Path Analysis',
-    subtitle: 'Trace traffic flow through security controls and routing components',
-  },
-  pathanalysisenhanced: {
-    title: 'Traffic Path Analysis (Graph View)',
-    subtitle: 'Graph-based visualization with blocked hop, asymmetric routing, and missing rule detection',
+    title: 'Path Analysis',
+    subtitle: 'Network path tracing with classic, graph, and traffic flow analysis',
   },
   routeintelligence: {
     title: 'Route Intelligence',
