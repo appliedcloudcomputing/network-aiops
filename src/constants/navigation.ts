@@ -19,8 +19,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { id: 'tickets', label: 'Create Ticket', icon: 'ticket' },
   { id: 'statusboard', label: 'Ticket Status', icon: 'kanban' },
   { id: 'rulegenerator', label: 'Rule Generator', icon: 'code' },
-  { id: 'validation', label: 'Validation', icon: 'validation' },
-  { id: 'conflicts', label: 'Conflict Detection', icon: 'conflicts' },
+  { id: 'ruleanalysis', label: 'Rule Analysis', icon: 'validation' },
   { id: 'settings', label: 'Settings', icon: 'settings' },
 ];
 
@@ -68,6 +67,10 @@ export const VIEW_INFO_MAP: Record<ViewId, ViewInfo> = {
   rulegenerator: {
     title: 'Multi-Cloud Rule Generator',
     subtitle: 'Generate platform-specific firewall rules from unified policy',
+  },
+  ruleanalysis: {
+    title: 'Rule Analysis',
+    subtitle: 'Rule validation, conflict detection, and compliance checks',
   },
   validation: {
     title: 'Rule Validation Dashboard',

@@ -15,6 +15,7 @@ export type ViewId =
   | 'statusboard'
   | 'l1whitelisting'
   | 'rulegenerator'
+  | 'ruleanalysis'
   | 'validation'
   | 'conflicts'
   | 'multicloudvisibility'
