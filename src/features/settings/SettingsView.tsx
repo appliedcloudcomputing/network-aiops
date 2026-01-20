@@ -7,6 +7,7 @@ import { PageContainer } from '../../components';
 import { useSettings } from './hooks/useSettings';
 import {
   SettingsTabs,
+  NavigationSettingsPanel,
   CloudConnectionsPanel,
   ServiceNowPanel,
   SIEMPanel,
@@ -71,6 +72,8 @@ export const SettingsView: React.FC = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'navigation':
+        return <NavigationSettingsPanel />;
       case 'cloud':
         return (
           <CloudConnectionsPanel

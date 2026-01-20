@@ -113,6 +113,7 @@ export interface SettingsState {
   apm: APMConfig;
   users: User[];
   notifications: NotificationPreferences;
+  pageVisibility: PageVisibilitySettings;
 }
 
 export type SettingsTab =
@@ -122,4 +123,18 @@ export type SettingsTab =
   | 'apm'
   | 'users'
   | 'notifications'
-  | 'audit';
+  | 'audit'
+  | 'navigation';
+
+export interface PageVisibilitySettings {
+  [key: string]: boolean;
+}
+
+export interface PageVisibilityItem {
+  id: import('./navigation').ViewId;
+  label: string;
+  description: string;
+  visible: boolean;
+  category: 'core' | 'analysis' | 'operations' | 'cloud' | 'system';
+  isRequired?: boolean; // Some pages like Dashboard and Settings cannot be hidden
+}

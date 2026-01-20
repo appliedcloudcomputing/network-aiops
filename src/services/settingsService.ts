@@ -299,6 +299,7 @@ export const settingsService = {
       apm: mockAPMConfig,
       users: mockUsers,
       notifications: mockNotificationPreferences,
+      pageVisibility: {},
     };
   },
 

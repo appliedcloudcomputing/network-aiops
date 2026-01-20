@@ -10,3 +10,4 @@ export { APMPanel } from './APMPanel';
 export { UserManagementPanel } from './UserManagementPanel';
 export { NotificationsPanel } from './NotificationsPanel';
 export { AuditLogsPanel } from './AuditLogsPanel';
+export { NavigationSettingsPanel } from './NavigationSettingsPanel';
